@@ -1,8 +1,6 @@
 require('../types');
 var express = require('express');
 var router = express.Router();
-let fetch = require('node-fetch');
-let endpoint = process.env.FB_ENDPOINT;
 let datasource = require('../datasource/firebase');
 /* 
 * Adds a new user
