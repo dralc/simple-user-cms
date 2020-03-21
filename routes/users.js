@@ -1,7 +1,10 @@
 require('../types');
 var express = require('express');
 var router = express.Router();
-let datasource = require('../datasource/firebase');
+
+/** @type {Datasource}*/
+let datasource = require(`../datasource/${process.env.SIM_DATASOURCE}`);
+
 /* 
 * Adds a new user
 */

@@ -10,3 +10,10 @@
   * @typedef {Object} AddedUser
   * @property {String} name
   */
+
+  /**
+   * @typedef {Object} Datasource
+   * @property {Function} add
+   * @property {Function} delete
+   * @property {Function} get
+   */

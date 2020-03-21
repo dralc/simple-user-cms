@@ -1,6 +1,6 @@
 require('../types');
 const fetch = require('node-fetch');
-const endpoint = process.env.FB_ENDPOINT;
+const endpoint = process.env.SIM_FIREBASE;
 
 /**
  * @param {User} user
