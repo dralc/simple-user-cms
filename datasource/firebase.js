@@ -11,9 +11,12 @@ exports.add = async user => {
 		method: 'post',
 		body: JSON.stringify(user),
 		headers: { 'Content-Type': 'application/json' },
-	})
+	});
 
-	return res.json();
+	const addedUser = await res.json();
+	const id = addedUser.name;
+
+	return { id };
 }
 
 /**
@@ -30,12 +33,12 @@ exports.delete = async id => {
 
 /**
 * @param {String} name 
-* @returns {Promise<User>}
+* @returns {Promise<ResultsUsers>}
  */
 exports.get = async name => {
 	const res = await fetch(`${endpoint}.json?orderBy="name"&startAt="${name}"&endAt="${name}\\uf8ff"`, {
 		method: 'get',
 	});
 
-	return res.json();
+	return res.json() || {};
 }

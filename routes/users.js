@@ -16,6 +16,7 @@ router.post('/add', async (req, res) => {
 
 	const user = normalize(req.body);
 	const addedUser = await datasource.add(user);
+	res.status(201);
 	res.send(addedUser);
 });
 
@@ -44,7 +45,6 @@ router.get('/get', async (req, res) => {
 function normalize(user) {
 	return {  
 		...user,
-		...{ role: !!(user.role === 'true') }
 	};
 }
 
@@ -52,7 +52,7 @@ function normalize(user) {
  * @param {User} user 
  */
 function isValidUser(user) {
-	return !!(user.name && user.email && user.address && user.role);
+	return !!(user.name && user.email && user.address && (user.role !== undefined));
 }
 
 module.exports = router;

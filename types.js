@@ -8,12 +8,16 @@
 
  /**
   * @typedef {Object} AddedUser
-  * @property {String} name
+  * @property {String} id
   */
 
-  /**
-   * @typedef {Object} Datasource
-   * @property {Function} add
-   * @property {Function} delete
-   * @property {Function} get
-   */
+/**
+ * @typedef {Object} Datasource
+ * @property {Function:Object} add
+ * @property {Function:String} delete
+ * @property {Function:Object} get
+ */
+
+/**
+ * @typedef {Object} ResultsUsers - Hashmap of id : User
+ */
