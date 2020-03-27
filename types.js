@@ -12,9 +12,9 @@
   */
 
 /**
- * @typedef {Object} Datasource
+ * @typedef {Object} IDatasource
  * @property {Function:Object} add
- * @property {Function:String} delete
+ * @property {Function:String} remove
  * @property {Function:Object} get
  */
 

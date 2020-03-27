@@ -1,4 +1,5 @@
 require('../types');
+const debug = require('debug')('sim_datasource');
 const fetch = require('node-fetch');
 const endpoint = process.env.SIM_FIREBASE;
 
@@ -21,13 +22,13 @@ exports.add = async user => {
 
 /**
  * @param {String} id
- * @returns {String}
+ * @returns {Promise<String>}
  */
-exports.delete = async id => {
+exports.remove = async id => {
 	await fetch(`${endpoint}/${id}.json`, {
 		method: 'delete',
 	});
-
+	debug(`removed ${id}`);
 	return 'ok';
 }
 

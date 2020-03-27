@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon npm start",
-    "test-integration": "SIM_DATASOURCE=firebase SIM_FIREBASE=https://some.endpoint npx ava --fail-fast --verbose"
+    "dev": "DEBUG=sim nodemon npm start",
+    "test-integration": "DEBUG=sim npx ava --fail-fast --verbose"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

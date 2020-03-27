@@ -32,8 +32,8 @@ function getUser(serverUrl, name) {
  * @param {String} serverUrl
  * @param {String} id - user's id
  */
-function deleteUser(serverUrl, id) {
-	return fetch(serverUrl + '/users/delete', {
+function removeUser(serverUrl, id) {
+	return fetch(serverUrl + '/users/remove', {
 		method: 'DELETE',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: `id=${id}`
@@ -61,7 +61,7 @@ test.afterEach.always(t => {
 	t.context.server.close();
 });
 
-test('Sequence: Add user, get user, delete user, get user', async t => {
+test('Sequence: Add user, get user, remove user, get user', async t => {
 	
 	try {
 		const res = await addUser(t.context.serverUrl, t.context.user);
@@ -78,7 +78,7 @@ test('Sequence: Add user, get user, delete user, get user', async t => {
 
 		t.deepEqual(gotUserDat, t.context.user, 'The added user should be the same as the retrieved user');
 
-		await deleteUser(t.context.serverUrl, addedUser.id);
+		await removeUser(t.context.serverUrl, addedUser.id);
 
 		const res3 = await getUser(t.context.serverUrl, t.context.user.name);
 		const blank = await res3.json();

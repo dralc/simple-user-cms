@@ -2,7 +2,7 @@ require('../types');
 var express = require('express');
 var router = express.Router();
 
-/** @type {Datasource}*/
+/** @type {IDatasource}*/
 let datasource = require(`../datasource/${process.env.SIM_DATASOURCE}`);
 
 /* 
@@ -23,10 +23,10 @@ router.post('/add', async (req, res) => {
 /*
  * Remove a user
  */
-router.delete('/delete', async (req, res) => {
+router.delete('/remove', async (req, res) => {
 	const id = req.body.id;
-	await datasource.delete(id);
-	res.send('deleted');
+	await datasource.remove(id);
+	res.send('removed');
 });
 
 /*

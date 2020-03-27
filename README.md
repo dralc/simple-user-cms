@@ -1,8 +1,14 @@
 # SimpleUserCMS
 
-- This server provides endpoints for interacting with a Firebase cloud db.
+- This server provides endpoints for interacting with a Firebase or Redis db.
 
-- To run the local server, set the environment variable FB_ENDPOINT then `npm run dev`:
-`FB_ENDPOINT=my.endpoint npm run dev`
+## Environment variables
+DEBUG "sim"
+SIM_DATASOURCE "firebase" OR "redis"
 
-- There are Postman example calls to this server at https://documenter.getpostman.com/view/1592722/SzRyzqB6?version=latest
+For a datasource of "firebase"
+SIM_FIREBASE
+
+For a datasource of "redis"
+SIM_REDIS_HOST
+SIM_REDIS_PORT
