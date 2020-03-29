@@ -11,7 +11,7 @@ faker.locale = "en_AU";
  * @param {User} user
  * @returns {Promise<Response>}
  */
-function addUser(serverUrl, user) {
+function usersAdd(serverUrl, user) {
 	return fetch(`${serverUrl}/users/add`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -24,7 +24,7 @@ function addUser(serverUrl, user) {
  * @param {String} name - User.name to search for
  * @returns {Promise<Response>}
  */
-function getUser(serverUrl, name) {
+function usersGet(serverUrl, name) {
 	return fetch(`${serverUrl}/users/get?name=${name}`);
 }
 
@@ -32,7 +32,7 @@ function getUser(serverUrl, name) {
  * @param {String} serverUrl
  * @param {String} id - user's id
  */
-function removeUser(serverUrl, id) {
+function usersRemove(serverUrl, id) {
 	return fetch(serverUrl + '/users/remove', {
 		method: 'DELETE',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -62,28 +62,28 @@ test.afterEach.always(t => {
 });
 
 test('Sequence: Add user, get user, remove user, get user', async t => {
+	// --- Add user ---
 	
-	try {
-		const res = await addUser(t.context.serverUrl, t.context.user);
-		
-		t.is(res.status, 201);
+	const res = await usersAdd(t.context.serverUrl, t.context.user);
+	t.is(res.status, 201);
 
-		const addedUser = await res.json();
-		
-		t.truthy(addedUser.id, 'Property <id> should be returned');
+	const addedUser = await res.json();
+	t.truthy(addedUser.id, 'Property <id> should be returned');
 
-		const res2 = await getUser(t.context.serverUrl, t.context.user.name);
-		const gotUser = await res2.json();
-		const gotUserDat = gotUser[addedUser.id];
+	// --- Get user ---
 
-		t.deepEqual(gotUserDat, t.context.user, 'The added user should be the same as the retrieved user');
+	const res2 = await usersGet(t.context.serverUrl, t.context.user.name);
+	const gotUser = await res2.json();
+	const gotUserDat = gotUser[addedUser.id];
+	t.deepEqual(gotUserDat, t.context.user, 'The added user should be the same as the retrieved user');
 
-		await removeUser(t.context.serverUrl, addedUser.id);
+	// --- Remove user ---
 
-		const res3 = await getUser(t.context.serverUrl, t.context.user.name);
-		const blank = await res3.json();
-		
-		t.is(Object.keys(blank).length, 0, 'The user should have been deleted')
+	await usersRemove(t.context.serverUrl, addedUser.id);
 
-	} catch(er) { t.log(er) }
+	// --- Get user ---
+
+	const res3 = await usersGet(t.context.serverUrl, t.context.user.name);
+	const blank = await res3.json();
+	t.is(Object.keys(blank).length, 0, 'The user should have been deleted but was still retrievable');
 });

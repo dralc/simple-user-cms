@@ -19,5 +19,5 @@
  */
 
 /**
- * @typedef {Object} ResultsUsers - Hashmap of id : User
+ * @typedef {Object} ResultsUsers - Hashmap of 'someId' : User
  */
