@@ -28,8 +28,7 @@ exports.remove = async id => {
 	await fetch(`${endpoint}/${id}.json`, {
 		method: 'delete',
 	});
-	debug(`removed ${id}`);
-	return 'ok';
+	return `Removed ${id}`;
 }
 
 /**

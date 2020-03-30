@@ -55,7 +55,7 @@ exports.remove = async id => {
 	// Remove user
 	await redis.del(id);
 
-	return `Deleted ${id}`;
+	return `Removed ${id}`;
 }
 
 /**

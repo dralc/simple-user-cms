@@ -25,8 +25,8 @@ router.post('/add', async (req, res) => {
  */
 router.delete('/remove', async (req, res) => {
 	const id = req.body.id;
-	await datasource.remove(id);
-	res.send('removed');
+	const msg = await datasource.remove(id);
+	res.send(msg);
 });
 
 /*
@@ -35,6 +35,7 @@ router.delete('/remove', async (req, res) => {
 router.get('/get', async (req, res) => {
 	const name = req.query.name;
 	const user = await datasource.get(name);
+	res.set('Content-type', 'application/json')
 	res.send(user);
 });
 
