@@ -1,20 +1,25 @@
 {
   "name": "simpleusercms",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon npm start"
+    "dev": "DEBUG=sim nodemon npm start",
+    "test-integration": "DEBUG=sim npx ava --fail-fast --verbose"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "ioredis": "^4.16.0",
     "morgan": "~1.9.1"
   },
   "devDependencies": {
+    "ava": "^3.5.0",
+    "faker": "^4.1.0",
     "node-fetch": "^2.6.0",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "test-listen": "^1.1.0"
   }
 }
