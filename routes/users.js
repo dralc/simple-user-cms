@@ -52,7 +52,11 @@ function normalize(user) {
  * @param {User} user 
  */
 function isValidUser(user) {
-	return !!(user.name && user.email && user.address && (user.role !== undefined));
+	return !!(user.name &&
+		user.email &&
+		user.address &&
+		(user.role && /^(true|false)$/i.test(user.role))
+	);
 }
 
 module.exports = router;
