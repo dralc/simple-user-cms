@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "DEBUG=sim nodemon npm start",
-    "test-integration": "DEBUG=sim npx ava --fail-fast --verbose"
+    "test-integration": "DEBUG=sim npx ava --fail-fast --verbose",
+    "start-redis": "$REDIS_DIR/src/redis-server --daemonize yes && $REDIS_DIR/src/redis-cli"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
