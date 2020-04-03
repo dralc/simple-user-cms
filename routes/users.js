@@ -10,14 +10,15 @@ let datasource = require(`../datasource/${process.env.SIM_DATASOURCE}`);
 */
 router.post('/add', async (req, res) => {
 	if ( !isValidUser(req.body) ) {
-		res.send('invalid user data');
+		res.status(400)
+			.send('invalid user data');
 		return;
 	}
 
 	const user = normalize(req.body);
 	const addedUser = await datasource.add(user);
-	res.status(201);
-	res.send(addedUser);
+	res.status(201)
+		.send(addedUser);
 });
 
 /*
@@ -56,7 +57,7 @@ function isValidUser(user) {
 	return !!(user.name &&
 		user.email &&
 		user.address &&
-		(user.role && /^(true|false)$/i.test(user.role))
+		(/^(true|false)$/i.test(user.role))
 	);
 }
 

@@ -61,6 +61,11 @@ test.afterEach.always(t => {
 	t.context.server.close();
 });
 
+test('Add invalid user', async t => {
+	const res = await  usersAdd(t.context.serverUrl, { name: 'some body', role: false });
+	t.is(res.status, 400, 'Should return invalid');
+});
+
 test('Sequence: Add user, get user, remove user, get user', async t => {
 	// --- Add user ---
 	
