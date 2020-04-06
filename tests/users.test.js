@@ -79,8 +79,8 @@ test('Sequence: Add user, get user, remove user, get user', async t => {
 
 	const res2 = await usersGet(t.context.serverUrl, t.context.user.name);
 	const gotUser = await res2.json();
-	const gotUserDat = gotUser[addedUser.id];
-	t.deepEqual(gotUserDat, t.context.user, 'The added user should be the same as the retrieved user');
+	delete gotUser.id;
+	t.deepEqual(gotUser, t.context.user, 'The added user should be the same as the retrieved user');
 
 	// --- Remove user ---
 

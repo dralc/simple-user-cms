@@ -61,10 +61,10 @@ exports.remove = async id => {
 /**
  * Gets the first matching user with a name specified by `name`
  * 
- * @param {String} name 
- * @returns {Promise<ResultsUsers>}
+ * @param { {id: String, name: String} } arg
+ * @returns {Promise<UserResult>}
  */
-exports.get = async name => {
+exports.get = async ({ id, name }) => { 
 	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name}*`);
 	
 	if (matches[1].length === 0) {
@@ -75,7 +75,7 @@ exports.get = async name => {
 	const user = await redis.hgetall(userKey);
 	normalizeUser(user);
 
-	return JSON.stringify({ [userKey]: user });
+	return { ...{ id: userKey }, ...user };
 }
 
 function normalizeUser(user) {

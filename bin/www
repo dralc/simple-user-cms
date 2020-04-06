@@ -3,8 +3,8 @@
 /**
  * Module dependencies.
  */
-
-var app = require('../app');
+const { SIM_APP } = process.env;
+var app = require(`../${SIM_APP || 'app'}`);
 var debug = require('debug')('sim');
 var http = require('http');
 

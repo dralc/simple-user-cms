@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
+    "start-graphql": "APP=appGraphql node ./bin/www",
     "dev": "DEBUG=sim nodemon npm start",
     "test-integration": "DEBUG=sim npx ava --fail-fast --verbose",
     "start-redis": "$REDIS_DIR/src/redis-server --daemonize yes && $REDIS_DIR/src/redis-cli"
   },
   "dependencies": {
+    "apollo-server-express": "^2.11.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",

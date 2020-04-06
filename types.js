@@ -21,3 +21,12 @@
 /**
  * @typedef {Object} ResultsUsers - Hashmap of 'someId' : User
  */
+
+ /**
+  * @typedef {Object} UserResult
+  * @property {String} id
+  * @property {String} name
+  * @property {String} email
+  * @property {String} address
+  * @property {Boolean} role
+  */

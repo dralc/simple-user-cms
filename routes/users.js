@@ -35,9 +35,9 @@ router.delete('/remove', async (req, res) => {
 */
 router.get('/get', async (req, res) => {
 	const name = req.query.name;
-	const user = await datasource.get(name);
+	const user = await datasource.get({ name });
 	res.set('Content-type', 'application/json')
-	res.send(user);
+	res.send(JSON.stringify(user));
 });
 
 /**
