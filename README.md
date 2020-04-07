@@ -26,6 +26,10 @@
 
 ## Graphql
 * Graphql Playground is available at http://localhost:3000/graphql
+* `npm run dev`
+
+## Redis
+* Monitor commands issued to Redis during dev/debugging `npm run start-rediscli` > `MONITOR`
 
 # VS Code config examples
 ```JSON

@@ -34,7 +34,7 @@ exports.add = async user => {
 			'address', user.address,
 			'role', user.role);
 
-		redis.hset(INDEX_NAME, user.name, nextUserId);
+		redis.hset(INDEX_NAME, user.name.toLowerCase(), nextUserId);
 		
 		return { id: userKey };
 
@@ -64,7 +64,7 @@ exports.remove = async id => {
  * @param { {id: String, name: String} } arg
  * @returns {Promise<UserResult>}
  */
-exports.get = async ({ id, name }) => { 
+exports.get = async ({ id, name }) => {
 	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name}*`);
 	
 	if (matches[1].length === 0) {
@@ -76,6 +76,39 @@ exports.get = async ({ id, name }) => {
 	normalizeUser(user);
 
 	return { ...{ id: userKey }, ...user };
+}
+
+/**
+ * @returns {Promise<Array<UserResult>}
+ */
+exports.getUsers = async ({ name }) => {
+	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name.toLowerCase()}*`);
+	const matchedUsers = matches[1]; // Format ['John Doe', '11', 'Bob Scott ', '51']
+	
+	if (matchedUsers.length === 0) {
+		return [];
+	}
+
+	// Get matched users from index
+	// Format [ { id:'user:11' }, { id:'user:51' } ]
+	const userResults = matchedUsers.reduce((acc, val, i) => {
+		// user num is in the odd indices
+		if (i % 2 !== 0) {
+			acc.push({ id: `${USER_PREFIX}${val}` });
+		}
+		return acc;
+	}, []);
+
+	// Look up each user and fill in user data
+	let userGot;
+	for (let user, i=0, len=userResults.length; i < len; i++) {
+		user = userResults[i];
+		userGot = await redis.hgetall(`${user.id}`);
+		normalizeUser(userGot);
+		userResults[i] = { ...user, ...userGot };
+	}
+
+	return userResults;
 }
 
 function normalizeUser(user) {
