@@ -20,7 +20,7 @@ const redis = new Redis(
 
 /**
  * Adds a user and indexes the user's name search
- * 
+ *
  * @param {User} user
  * @returns {Promise<AddedUser>
  */
@@ -35,11 +35,12 @@ exports.add = async user => {
 			'role', user.role);
 
 		redis.hset(INDEX_NAME, user.name.toLowerCase(), nextUserId);
-		
+
 		return { id: userKey };
 
 	} catch (er) {
-		debug(er);
+		debug.log(er);
+		throw er;
 	}
 }
 
@@ -48,25 +49,34 @@ exports.add = async user => {
  * @returns {Promise<String>}
  */
 exports.remove = async id => {
-	// Remove user from the name index
-	const name = await redis.hget(id, 'name');
-	await redis.hdel(INDEX_NAME, name);
+	try {
+		// Remove user from the name index
+		const name = await redis.hget(id, 'name');
+		const num1 = await redis.hdel(INDEX_NAME, name);
 
-	// Remove user
-	await redis.del(id);
+		// Remove user
+		const numKeysDel = await redis.del(id);
+		if (num1 === 0 && numKeysDel === 0) {
+			throw Error(`User ${id} was not found. Nothing was removed`);
+		}
 
-	return `Removed ${id}`;
+		return `Removed ${id}`;
+
+	} catch (er) {
+		debug.log(er);
+		throw er;
+	}
 }
 
 /**
  * Gets the first matching user with a name specified by `name`
- * 
+ *
  * @param { {id: String, name: String} } arg
  * @returns {Promise<UserResult>}
  */
 exports.get = async ({ id, name }) => {
-	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name}*`);
-	
+	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name.toLowerCase()}*`);
+
 	if (matches[1].length === 0) {
 		return {};
 	}
@@ -84,7 +94,7 @@ exports.get = async ({ id, name }) => {
 exports.getUsers = async ({ name }) => {
 	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name.toLowerCase()}*`);
 	const matchedUsers = matches[1]; // Format ['John Doe', '11', 'Bob Scott ', '51']
-	
+
 	if (matchedUsers.length === 0) {
 		return [];
 	}
@@ -103,6 +113,8 @@ exports.getUsers = async ({ name }) => {
 	let userGot;
 	for (let user, i=0, len=userResults.length; i < len; i++) {
 		user = userResults[i];
+		// TODO use redis pipelining, https://github.com/luin/ioredis#pipelining
+		// use a callback on each hgetall() to merge in `id` field
 		userGot = await redis.hgetall(`${user.id}`);
 		normalizeUser(userGot);
 		userResults[i] = { ...user, ...userGot };

@@ -9,7 +9,8 @@
     "start-redis": "$REDIS_DIR/src/redis-server --daemonize yes",
     "start-rediscli": "$REDIS_DIR/src/redis-cli",
     "dev": "DEBUG=sim npm run start-redis && nodemon npm start",
-    "test-integration": "DEBUG=sim npx ava --fail-fast --verbose"
+    "test-integration": "DEBUG=sim npx ava --fail-fast --verbose",
+    "seed-redis": "node ./mock/seedRedis 500"
   },
   "dependencies": {
     "apollo-server-express": "^2.11.0",

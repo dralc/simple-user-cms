@@ -1,3 +1,7 @@
+/**
+ * Usage node ./seedRedis $count
+ */
+
 const datasource = require('../datasource/redis');
 const faker = require('faker');
 faker.locale = "en_AU";
@@ -18,4 +22,4 @@ async function addUsers(count) {
 	process.exit(0);
 };
 
-addUsers(50);
+addUsers(process.argv[2]);
