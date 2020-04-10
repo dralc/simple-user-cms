@@ -1,9 +1,7 @@
 require('../types');
 var express = require('express');
 var router = express.Router();
-
-/** @type {IDatasource}*/
-let datasource = require(`../datasource/${process.env.SIM_DATASOURCE}`);
+let _datasource;
 
 /* 
 * Adds a new user
@@ -16,7 +14,7 @@ router.post('/add', async (req, res) => {
 	}
 
 	const user = normalize(req.body);
-	const addedUser = await datasource.add(user);
+	const addedUser = await _datasource.add(user);
 	res.status(201)
 		.send(addedUser);
 });
@@ -26,7 +24,7 @@ router.post('/add', async (req, res) => {
  */
 router.delete('/remove', async (req, res) => {
 	const id = req.body.id;
-	const msg = await datasource.remove(id);
+	const msg = await _datasource.remove(id);
 	res.send(msg);
 });
 
@@ -34,10 +32,14 @@ router.delete('/remove', async (req, res) => {
 * Search a user by name
 */
 router.get('/get', async (req, res) => {
-	const name = req.query.name;
-	const user = await datasource.get({ name });
-	res.set('Content-type', 'application/json')
-	res.send(JSON.stringify(user));
+	try {
+		const name = req.query.name;
+		const user = await _datasource.get({ name });
+		res.set('Content-type', 'application/json')
+		res.send(JSON.stringify(user));
+	} catch (er) {
+		res.send( { message: `${er.name}: User "${er.input}" not found` } );
+	}
 });
 
 /**
@@ -61,4 +63,8 @@ function isValidUser(user) {
 	);
 }
 
-module.exports = router;
+module.exports = (datasource) => {
+	_datasource = datasource;
+
+	return router;
+}

@@ -1,14 +1,23 @@
 const { isValidUser } = require('./datasource/utils');
+const { UserInputError } = require('apollo-server-express');
+const { DataNotFoundError } = require('./datasource/DatasourceErrors');
 
 exports.resolvers = {
 	Query: {
 		user: async (parent, { name }, context, info) => {
-			const userResult = await context.datasource.get({ name });
-			return userResult;
+			try {
+				const userResult = await context.datasource.get({ name });
+				return userResult;
+			} catch (er) {
+				if (er instanceof DataNotFoundError) {
+					throw new UserInputError(`User "${er.input}" was not found.`);
+				}
+			}
 		},
 		userList: async (parent, { name }, context, info) => {
 			const users = await context.datasource.getUsers({ name });
 			return users;
+			// todo handle no user list case
 		}
 	},
 	Mutation: {

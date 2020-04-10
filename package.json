@@ -3,14 +3,17 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "start": "npm run start-graphql",
+    "start": "npm run start:graphql",
     "start-rest": "node ./bin/www",
-    "start-graphql": "APP=appGraphql node ./bin/www",
-    "start-redis": "$REDIS_DIR/src/redis-server --daemonize yes",
-    "start-rediscli": "$REDIS_DIR/src/redis-cli",
-    "dev": "DEBUG=sim npm run start-redis && nodemon npm start",
-    "test-integration": "DEBUG=sim npx ava --fail-fast --verbose",
-    "seed-redis": "node ./mock/seedRedis 500"
+    "start:graphql": "SIM_APP=appGraphql SIM_DATASOURCE=redis node ./bin/www",
+    "start:redis": "$REDIS_DIR/src/redis-server --daemonize yes",
+    "start:rediscli": "$REDIS_DIR/src/redis-cli",
+    "dev": "DEBUG=sim npm run start:redis && nodemon npm start",
+    "seed:redis:fixed": "node mock/seedRedis fixtures/users.json",
+    "test:integration": "SIM_DATASOURCE=redis npx ava --fail-fast --verbose",
+    "test:integration:watch": "npm run test:integration -- --watch",
+    "test:unit": "SIM_STUB_DATASOURCE=1 SIM_DATASOURCE=redis npx ava --verbose",
+    "test:unit:watch": "npm run test:unit -- --watch"
   },
   "dependencies": {
     "apollo-server-express": "^2.11.0",
@@ -22,10 +25,23 @@
     "morgan": "~1.9.1"
   },
   "devDependencies": {
+    "@types/sinon": "^9.0.0",
     "ava": "^3.5.0",
     "faker": "^4.1.0",
+    "graphql-request": "^1.8.2",
     "node-fetch": "^2.6.0",
     "nodemon": "^2.0.2",
-    "test-listen": "^1.1.0"
+    "sinon": "^9.0.2",
+    "test-listen": "^1.1.0",
+    "ts-node": "^8.8.2",
+    "typescript": "^3.8.3"
+  },
+  "ava": {
+    "extensions": [
+      "ts", "js"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
   }
 }

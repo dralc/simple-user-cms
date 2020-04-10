@@ -2,7 +2,8 @@ const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const { typeDefs } = require('./typeDefs.js');
 const { resolvers } = require('./resolvers');
-const datasource = require(`./datasource/redis`);
+/** @type {IDatasource}*/
+const datasource = require(`./datasource/${process.env.SIM_DATASOURCE}`);
 
 const app = express();
 new ApolloServer({
@@ -14,4 +15,7 @@ new ApolloServer({
 })
 .applyMiddleware({ app });
 
-module.exports = app;
+module.exports = {
+	app,
+	datasource
+}

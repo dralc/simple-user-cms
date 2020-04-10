@@ -4,7 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var usersRouter = require('./routes/users');
+/** @type {IDatasource}*/
+const datasource = require(`./datasource/${process.env.SIM_DATASOURCE}`);
+var usersRouter = require('./routes/users')(datasource);
 
 var app = express();
 
@@ -20,4 +22,8 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
-module.exports = app;
+
+module.exports = {
+  app,
+  datasource,
+};

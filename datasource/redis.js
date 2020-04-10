@@ -11,12 +11,16 @@ const USER_PREFIX = 'user:';
 require ('../types');
 const Redis = require('ioredis');
 const debug = require('debug');
+const { DataNotFoundError } = require('./DatasourceErrors');
 
 debug('sim');
 
-const redis = new Redis(
-		process.env.SIM_REDIS_PORT || 6379,
-		process.env.SIM_REDIS_HOST || 'localhost');
+let redis;
+if ( !process.env.SIM_STUB_DATASOURCE ) {
+	redis = new Redis(
+			process.env.SIM_REDIS_PORT || 6379,
+			process.env.SIM_REDIS_HOST || 'localhost');
+}
 
 /**
  * Adds a user and indexes the user's name search
@@ -52,7 +56,7 @@ exports.remove = async id => {
 	try {
 		// Remove user from the name index
 		const name = await redis.hget(id, 'name');
-		const num1 = await redis.hdel(INDEX_NAME, name);
+		const num1 = await redis.hdel(INDEX_NAME, name.toLowerCase());
 
 		// Remove user
 		const numKeysDel = await redis.del(id);
@@ -78,7 +82,7 @@ exports.get = async ({ id, name }) => {
 	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name.toLowerCase()}*`);
 
 	if (matches[1].length === 0) {
-		return {};
+		throw new DataNotFoundError( { input: id || name }, 'Data not found' );
 	}
 
 	const userKey = `${USER_PREFIX}${matches[1][1]}`;

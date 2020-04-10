@@ -16,6 +16,7 @@
  * @property {Function:Object} add
  * @property {Function:String} remove
  * @property {Function:Object} get
+ * @property {Function:Object} getUsers
  */
 
 /**

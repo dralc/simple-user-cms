@@ -1,10 +1,15 @@
+require('../types');
 const test = require('ava'); // NB. ava 3.x needs latest nodejs 10, 12, 13
 const http = require('http');
-const app = require('../app');
+const { app, datasource } = require('../app');
 const testListen = require('test-listen');
 const fetch = require('node-fetch');
 const faker = require('faker');
 faker.locale = "en_AU";
+
+const sinon = require('sinon');
+const { DataNotFoundError } = require('../datasource/DatasourceErrors');
+let isStubDatasource = !!process.env.SIM_STUB_DATASOURCE;
 
 /**
  * @param {String} serverUrl
@@ -20,7 +25,7 @@ function usersAdd(serverUrl, user) {
 }
 
 /**
- * @param {String} serverUrl 
+ * @param {String} serverUrl
  * @param {String} name - User.name to search for
  * @returns {Promise<Response>}
  */
@@ -45,30 +50,42 @@ test.beforeEach(async t => {
 	t.context.server = http.createServer(app);
 	t.context.serverUrl = await testListen(t.context.server);
 
-	// TODO instrument a mock datasource server that returns mock responses
-	
-	// Mock a new user
-	/** @type {User} */
-	t.context.user = {
-		name: faker.name.findName(),
-		email: faker.internet.exampleEmail(),
-		address: faker.fake('{{address.streetAddress}}, {{address.city}} {{address.zipCode}}'),
-		role: faker.random.boolean()
-	};
+	// Get user from fixture
+	t.context.users = require('../fixtures/users.json');
+	t.context.user = t.context.users[1];
+	let user = t.context.user;
+	let id = 'user:1';
+
+	if ( isStubDatasource ) {
+		t.context.ds_get = sinon.stub(datasource, 'get');
+		t.context.ds_add = sinon.stub(datasource, 'add');
+		t.context.ds_remove = sinon.stub(datasource, 'remove');
+
+		t.context.ds_get.withArgs( { name: user.name } )
+			.resolves( { id, ...user } );
+
+		t.context.ds_add.withArgs(user)
+			.resolves( { id } );
+
+		t.context.ds_remove.withArgs(id)
+			.resolves(`Removed ${id}`)
+	}
+
 });
 
 test.afterEach.always(t => {
+	sinon.restore();
 	t.context.server.close();
 });
 
-test('Add invalid user', async t => {
+test.serial('Add invalid user', async t => {
 	const res = await  usersAdd(t.context.serverUrl, { name: 'some body', role: false });
 	t.is(res.status, 400, 'Should return invalid');
 });
 
-test('Sequence: Add user, get user, remove user, get user', async t => {
+test.serial('Sequence: Add user, get user, remove user, get user', async t => {
 	// --- Add user ---
-	
+
 	const res = await usersAdd(t.context.serverUrl, t.context.user);
 	t.is(res.status, 201);
 
@@ -78,17 +95,20 @@ test('Sequence: Add user, get user, remove user, get user', async t => {
 	// --- Get user ---
 
 	const res2 = await usersGet(t.context.serverUrl, t.context.user.name);
-	const gotUser = await res2.json();
-	delete gotUser.id;
-	t.deepEqual(gotUser, t.context.user, 'The added user should be the same as the retrieved user');
+	const userResult = await res2.json();
+	t.is(userResult.name, t.context.user.name, 'The added user should be the same as the retrieved user');
 
 	// --- Remove user ---
 
 	await usersRemove(t.context.serverUrl, addedUser.id);
 
 	// --- Get user ---
+	if ( isStubDatasource ) {
+		t.context.ds_get.withArgs( { name: t.context.user.name } )
+			.throws(new DataNotFoundError( { input:'' } ))
+	}
 
 	const res3 = await usersGet(t.context.serverUrl, t.context.user.name);
-	const blank = await res3.json();
-	t.is(Object.keys(blank).length, 0, 'The user should have been deleted but was still retrievable');
+	const er = await res3.json();
+	t.regex(er.message, /DataNotFoundError/i, 'The deleted user should not be found');
 });

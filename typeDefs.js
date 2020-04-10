@@ -3,8 +3,7 @@ const { gql } = require('apollo-server-express');
 exports.typeDefs = gql`
     type Query {
         user(id: String
-             name: String) : User
-
+             name: String) : User!
         userList(name: String) : [User!]!
 
     }
