@@ -38,6 +38,9 @@
     "typescript": "^3.8.3"
   },
   "ava": {
+    "files": [
+      "tests/**/*test*"
+    ],
     "extensions": [
       "ts", "js"
     ],

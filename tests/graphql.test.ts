@@ -2,68 +2,61 @@ import { request } from 'graphql-request';
 import avaTest, { TestInterface } from 'ava';  // NB. ava 3.x needs latest nodejs 10, 12, 13
 import * as http from 'http';
 import sinon from 'sinon';
-import { app, datasource } from '../appGraphql';
+import factory from '../appGraphql';
 import { DataNotFoundError } from '../datasource/DatasourceErrors';
 import { hasSameProps } from '../utils';
+import { QUERY_user, QUERY_userList } from "./gqlQueries";
 
 const testListen = require('test-listen');
 const test = avaTest as TestInterface<{ testProps, ds_get, ds_getUsers, server, serverUrl:string }>;
 let isStubDatasource = !!process.env.SIM_STUB_DATASOURCE;
 
-const QUERY_user = `
-query ($name: String) {
-	user(name: $name) {
-		id
-	}
-}
-`;
+function stubApp(ctx) {
+	const users = require('../fixtures/users.json');
+	const id = 'maddisonsId';
+	const id2 = 'maddissonsId2';
+	const badName = ctx.testProps.badName;
+	const goodName = ctx.testProps.goodName;
 
-const QUERY_userList = `
-query ($name: String) {
-	userList(name: $name) {
-		id
-		name
-		email
-		address
-		role
-	}
+	const fake_ds = {
+		get: sinon.stub(),
+		getUsers: sinon.stub(),
+	};
+
+	fake_ds.get
+		.withArgs({ name: badName })
+		.throws(new DataNotFoundError( { input: badName } ));
+	fake_ds.get
+		.withArgs({ name: goodName })
+		.resolves( { id, ...users[3] } );
+	
+	fake_ds.getUsers
+		.withArgs( { name: badName } )
+		.throws(new DataNotFoundError( { input: badName } ));
+	fake_ds.getUsers
+		.withArgs( { name: goodName } )
+		.resolves( [ { id, ...users[3] }, { id: id2, ...users[332] } ] );
+
+	return factory(fake_ds);
 }
-`;
 
 test.beforeEach(async t => {
-	// Instrument graphql server
-	t.context.server = http.createServer(app);
-	const serverUrl = await testListen(t.context.server);
-	t.context.serverUrl = `${serverUrl}/graphql`;
 	t.context.testProps = {
 		badName: 'bad name here',
 		goodName: 'Maddison',
-	};
-	
-	// Stub only when it's turned on
-	if (isStubDatasource) {
-		const users = require('../fixtures/users.json');
-		const id = 'maddisonsId';
-		const id2 = 'maddissonsId2';
-		const badName = t.context.testProps.badName;
-		const goodName = t.context.testProps.goodName;
+	};	
 
-		let ds_get = t.context.ds_get = sinon.stub(datasource, 'get');
-		ds_get
-			.withArgs({ name: badName })
-			.throws(new DataNotFoundError( { input: badName } ));
-		ds_get
-			.withArgs({ name: goodName })
-			.resolves( { id, ...users[3] } );
-		
-		let ds_getUsers = t.context.ds_getUsers = sinon.stub(datasource, 'getUsers');
-		ds_getUsers
-			.withArgs( { name: badName } )
-			.throws(new DataNotFoundError( { input: badName } ))
-		ds_getUsers
-			.withArgs( { name: goodName } )
-			.resolves( [ { id, ...users[3] }, { id: id2, ...users[332] } ] );
+	// Instrument graphql server
+	let app;
+	if (isStubDatasource) {
+		app = stubApp(t.context);
+	} else {
+		app = factory();
 	}
+
+	t.context.server = http.createServer(app);
+	const serverUrl = await testListen(t.context.server);
+	t.context.serverUrl = `${serverUrl}/graphql`;
 });
 
 test.afterEach.always(t => {
@@ -71,7 +64,7 @@ test.afterEach.always(t => {
 	t.context.server.close();
 });
 
-test.serial('Get a user', async t => {
+test('Get a user', async t => {
 	try {
 		const ctx = t.context;
 
@@ -90,7 +83,7 @@ test.serial('Get a user', async t => {
 	}
 });
 
-test.serial('Get a list of users', async t => {
+test('Get a list of users', async t => {
 	try {
 		const ctx = t.context;
 
@@ -103,7 +96,7 @@ test.serial('Get a list of users', async t => {
 		
 		// Test a valid 'name'
 		const users = await request(ctx.serverUrl, QUERY_userList, { name: ctx.testProps.goodName } );
-		t.truthy(users.userList.length);
+		t.is(users.userList.length, 2 );
 		t.true(hasSameProps( users.userList[0], { id:'',name:'',email:'',address:'',role:'' } ));
 	}
 	catch (er) {
@@ -111,29 +104,3 @@ test.serial('Get a list of users', async t => {
 		throw er;
 	}
 });
-
-// const MUTATION_createUser = `
-// mutation ($name:String!, $email:String!, $address:String!, $role:Boolean!){
-// 	createUser(name: $name, email: $email, address: $address, role: $role) {
-// 		success
-// 		msg
-// 		user {
-// 			id
-// 			name
-// 			address
-// 			email
-// 			role
-// 		}
-// 	}
-// }
-// `;
-
-// const MUTATION_removeUser = `
-// mutation {
-// 	removeUser(id:"user:499") {
-// 	  success
-// 	  msg
-// 	  id
-// 	}
-//   }
-// `;
