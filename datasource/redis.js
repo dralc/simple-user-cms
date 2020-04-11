@@ -93,6 +93,9 @@ exports.get = async ({ id, name }) => {
 }
 
 /**
+ * Gets a list of users with the matching `name`
+ * 
+ * @param { {name: String} } arg
  * @returns {Promise<Array<UserResult>}
  */
 exports.getUsers = async ({ name }) => {
@@ -100,7 +103,7 @@ exports.getUsers = async ({ name }) => {
 	const matchedUsers = matches[1]; // Format ['John Doe', '11', 'Bob Scott ', '51']
 
 	if (matchedUsers.length === 0) {
-		return [];
+		throw new DataNotFoundError( { input: name }, 'Data not found' );
 	}
 
 	// Get matched users from index

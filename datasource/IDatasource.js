@@ -16,3 +16,9 @@ exports.remove = async id => {}
 * @returns {Promise<ResultsUsers>}
  */
 exports.get = async name => {}
+
+/**
+ * @param {String} name
+ * @returns {Promise<Array<UserResult>}
+ */
+exports.getUsers = async name => {}

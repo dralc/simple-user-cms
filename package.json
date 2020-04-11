@@ -10,6 +10,7 @@
     "start:rediscli": "$REDIS_DIR/src/redis-cli",
     "dev": "DEBUG=sim npm run start:redis && nodemon npm start",
     "seed:redis:fixed": "node mock/seedRedis fixtures/users.json",
+    "test": "npm run test:unit && npm run test:integration",
     "test:integration": "SIM_DATASOURCE=redis npx ava --fail-fast --verbose",
     "test:integration:watch": "npm run test:integration -- --watch",
     "test:unit": "SIM_STUB_DATASOURCE=1 SIM_DATASOURCE=redis npx ava --verbose",

@@ -15,9 +15,14 @@ exports.resolvers = {
 			}
 		},
 		userList: async (parent, { name }, context, info) => {
-			const users = await context.datasource.getUsers({ name });
-			return users;
-			// todo handle no user list case
+			try {
+				const users = await context.datasource.getUsers({ name });
+				return users;
+			} catch (er) {
+				if (er instanceof DataNotFoundError) {
+					throw new UserInputError(`No users with name "${er.input}" were found`);
+				}
+			}
 		}
 	},
 	Mutation: {
