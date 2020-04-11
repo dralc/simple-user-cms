@@ -16,29 +16,29 @@ exports.typeDefs = gql`
         removeUser(id: ID!) : RemoveUserPayload!
 
     }
-    type CreateUserPayload implements IMutationPayload {
+    type CreateUserPayload {
         success: Boolean!
         msg: String!
         user: User
     }
-    type RemoveUserPayload implements IMutationPayload {
+    type RemoveUserPayload {
         success: Boolean!
         msg: String!
         id: ID
     }
-    type User implements INode {
+    type User {
         id: ID!
         name: String!
         address: String!
         email: String!
         role: Boolean!
     }
-    interface INode {
-        # Unique id of an object
-        id: ID!
-    }
-    interface IMutationPayload {
-        success: Boolean!
-        msg: String!
-    }
+    # interface INode {
+    #     # Unique id of an object
+    #     id: ID!
+    # }
+    # interface IMutationPayload {
+    #     success: Boolean!
+    #     msg: String!
+    # }
 `
