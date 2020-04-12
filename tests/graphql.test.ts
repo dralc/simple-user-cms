@@ -18,34 +18,26 @@ function stubApp(ctx) {
 	const id2 = 'maddissonsId2';
 	const badName = ctx.testProps.badName;
 	const goodName = ctx.testProps.goodName;
-
-	const fake_ds = {
+	const stubDs = {
 		get: sinon.stub(),
 		getUsers: sinon.stub(),
-		add: sinon.stub()
-			.withArgs( ctx.testProps.validUser )
-			.resolves( { id: ctx.testProps.validUserId } ),
+		add: sinon.stub(),
 	};
 
-	fake_ds.get
-		.withArgs({ name: badName })
+	stubDs.get.withArgs({ name: badName })
 		.throws(new DataNotFoundError( { input: badName } ));
-	fake_ds.get
-		.withArgs({ name: goodName })
+	stubDs.get.withArgs({ name: goodName })
 		.resolves( { id, ...users[3] } );
 	
-	fake_ds.getUsers
-		.withArgs( { name: badName } )
+	stubDs.getUsers.withArgs( { name: badName } )
 		.throws(new DataNotFoundError( { input: badName } ));
-	fake_ds.getUsers
-		.withArgs( { name: goodName } )
+	stubDs.getUsers.withArgs( { name: goodName } )
 		.resolves( [ { id, ...users[3] }, { id: id2, ...users[332] } ] );
 
-	// fake_ds.add
-	// 	.withArgs( ctx.testProps.validUser )
-	// 	.resolves( { id: ctx.test.validUserId } )
+	stubDs.add.withArgs( ctx.testProps.validUser )
+		.resolves( { id: ctx.testProps.validUserId } );
 
-	return factory(fake_ds);
+	return factory(stubDs);
 }
 
 test.beforeEach(async t => {
