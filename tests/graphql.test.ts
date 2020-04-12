@@ -5,7 +5,8 @@ import sinon from 'sinon';
 import factory from '../appGraphql';
 import { DataNotFoundError } from '../datasource/DatasourceErrors';
 import { hasSameProps } from '../utils';
-import { QUERY_user, QUERY_userList } from "./gqlQueries";
+import { QUERY_user, QUERY_userList, MUTATION_createUser } from "./gqlQueries";
+import { ValidationError } from "./errors";
 
 const testListen = require('test-listen');
 const test = avaTest as TestInterface<{ testProps, ds_get, ds_getUsers, server, serverUrl:string }>;
@@ -21,6 +22,9 @@ function stubApp(ctx) {
 	const fake_ds = {
 		get: sinon.stub(),
 		getUsers: sinon.stub(),
+		add: sinon.stub()
+			.withArgs( ctx.testProps.validUser )
+			.resolves( { id: ctx.testProps.validUserId } ),
 	};
 
 	fake_ds.get
@@ -37,6 +41,10 @@ function stubApp(ctx) {
 		.withArgs( { name: goodName } )
 		.resolves( [ { id, ...users[3] }, { id: id2, ...users[332] } ] );
 
+	// fake_ds.add
+	// 	.withArgs( ctx.testProps.validUser )
+	// 	.resolves( { id: ctx.test.validUserId } )
+
 	return factory(fake_ds);
 }
 
@@ -44,6 +52,13 @@ test.beforeEach(async t => {
 	t.context.testProps = {
 		badName: 'bad name here',
 		goodName: 'Maddison',
+		validUserId: 'userId',
+		validUser: {
+			name: 'Alverta Lang',
+			address: '51405 Zemlak Viaduct, Lake Alex 08214',
+			email: 'Tillman.Rice@yahoo.com',
+			role: true,
+		},
 	};	
 
 	// Instrument graphql server
@@ -102,5 +117,34 @@ test('Get a list of users', async t => {
 	catch (er) {
 		console.error(JSON.stringify(er, null, 2));
 		throw er;
+	}
+});
+
+test('Create a user: invalid user', async t => {
+	try {
+
+		const ctx = t.context;
+		const invalidUser = { /* no input fields specified */ };
+		let res = await t.throwsAsync( () => {
+			return request(ctx.serverUrl, MUTATION_createUser, invalidUser);
+		}, null, 'should have thrown validation error') as ValidationError;
+		
+		t.is(res.response.errors.length, 4, 'should have the right no. of validation errors');
+	}
+	catch (er) {
+		console.error(JSON.stringify(er, null, 2));
+	}
+});
+
+test('Create a user: valid user', async t => {
+	try {
+		const ctx = t.context;
+		const validUser = ctx.testProps.validUser;
+		let res = await request(ctx.serverUrl, MUTATION_createUser, validUser);
+		t.true(res.createUser.success);
+		t.true(hasSameProps(res.createUser.user, { id:'', name:'', email:'', address:'', role:'' }));
+	}
+	catch (er) {
+		console.error(JSON.stringify(er, null, 2));
 	}
 });
