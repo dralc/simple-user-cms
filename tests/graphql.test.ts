@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import factory from '../appGraphql';
 import { DataNotFoundError } from '../datasource/DatasourceErrors';
 import { hasSameProps } from '../utils';
-import { QUERY_user, QUERY_userList, MUTATION_createUser } from "./gqlQueries";
+import { QUERY_user, QUERY_userList, MUTATION_createUser, MUTATION_removeUser } from "./gqlQueries";
 import { ValidationError } from "./errors";
 
 const testListen = require('test-listen');
@@ -22,6 +22,7 @@ function stubApp(ctx) {
 		get: sinon.stub(),
 		getUsers: sinon.stub(),
 		add: sinon.stub(),
+		remove: sinon.stub(),
 	};
 
 	stubDs.get.withArgs({ name: badName })
@@ -37,6 +38,9 @@ function stubApp(ctx) {
 	stubDs.add.withArgs( ctx.testProps.validUser )
 		.resolves( { id: ctx.testProps.validUserId } );
 
+	stubDs.remove.withArgs( ctx.testProps.validUserId )
+		.resolves(`Removed ${ctx.testProps.validUserId}`);
+
 	return factory(stubDs);
 }
 
@@ -44,7 +48,7 @@ test.beforeEach(async t => {
 	t.context.testProps = {
 		badName: 'bad name here',
 		goodName: 'Maddison',
-		validUserId: 'userId',
+		validUserId: 'userId:987123',
 		validUser: {
 			name: 'Alverta Lang',
 			address: '51405 Zemlak Viaduct, Lake Alex 08214',
@@ -128,13 +132,18 @@ test('Create a user: invalid user', async t => {
 	}
 });
 
-test('Create a user: valid user', async t => {
+test('Create a valid user, then remove it ', async t => {
 	try {
 		const ctx = t.context;
 		const validUser = ctx.testProps.validUser;
 		let res = await request(ctx.serverUrl, MUTATION_createUser, validUser);
 		t.true(res.createUser.success);
 		t.true(hasSameProps(res.createUser.user, { id:'', name:'', email:'', address:'', role:'' }));
+		t.truthy(res.createUser.user.id);
+
+		// Test removing the added user
+		res = await request(ctx.serverUrl, MUTATION_removeUser, { id: res.createUser.user.id } );
+		t.true(res.removeUser.success);
 	}
 	catch (er) {
 		console.error(JSON.stringify(er, null, 2));

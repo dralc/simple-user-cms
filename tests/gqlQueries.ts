@@ -34,12 +34,12 @@ mutation ($name:String!, $email:String!, $address:String!, $role:Boolean!){
 }
 `;
 
-// const MUTATION_removeUser = `
-// mutation {
-// 	removeUser(id:"user:499") {
-// 	  success
-// 	  msg
-// 	  id
-// 	}
-//   }
-// `;
+export const MUTATION_removeUser = `
+mutation ($id:ID!) {
+	removeUser(id: $id) {
+	  success
+	  msg
+	  id
+	}
+  }
+`;
