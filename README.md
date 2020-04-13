@@ -8,7 +8,7 @@
 ## Environment variables
 * DEBUG=sim
 * SIM_DATASOURCE=redis OR firebase
-* APP=app OR appGraphql
+* APP=appGraphql OR app
 * NODE_ENV=production (disables graphql playground and introspection)
 
 ### For a datasource of `redis`
@@ -21,8 +21,11 @@
 > Eg. `SIM_DATASOURCE=firebase SIM_FIREBASE=https://your-firebase-endpoint.com npm start`
 
 ## Testing
-- To run integration tests: `{Environment vars} npm run test-integration`
-- There are Postman example calls to this server at https://documenter.getpostman.com/view/1592722/SzRyzqB6?version=latest
+- To run unit and integration tests together: `npm test`
+- To run integration tests: `{Environment vars} npm run test:integration`
+- There are Postman example calls to this server at:
+	- _GraphQL_: https://documenter.getpostman.com/view/1592722/SzezcXcj?version=latest
+	- _REST_:  https://documenter.getpostman.com/view/1592722/SzRyzqB6?version=latest
 
 ## Graphql
 * Graphql Playground is available at http://localhost:3000/graphql
@@ -97,9 +100,7 @@
 			"env": {
 				"DEBUG": "sim",
 				"SIM_DATASOURCE": "redis",
-				"SIM_REDIS_HOST": "",
-				"SIM_REDIS_PORT": "",
-				"SIM_FIREBASE": "YOUR_FIREBASE_ENDPOINT"
+				"SIM_STUB_DATASOURCE": "1"
 			}
 		}
 	]
