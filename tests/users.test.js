@@ -4,8 +4,6 @@ const http = require('http');
 const { app, datasource } = require('../app');
 const testListen = require('test-listen');
 const fetch = require('node-fetch');
-const faker = require('faker');
-faker.locale = "en_AU";
 
 const sinon = require('sinon');
 const { DataNotFoundError } = require('../datasource/DatasourceErrors');
