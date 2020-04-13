@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npm run start:graphql",
     "start-rest": "node ./bin/www",
-    "start:graphql": "SIM_APP=appGraphql SIM_DATASOURCE=redis node ./bin/www",
+    "start:graphql": "DEBUG=sim SIM_APP=appGraphql SIM_DATASOURCE=redis node ./bin/wwwgql",
     "start:redis": "$REDIS_DIR/src/redis-server --daemonize yes",
     "start:rediscli": "$REDIS_DIR/src/redis-cli",
     "dev": "DEBUG=sim npm run start:redis && nodemon npm start",
