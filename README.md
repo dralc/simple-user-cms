@@ -5,7 +5,7 @@
 	- you have a Redis server up and running (local or hosted)
 	- OR you a hosted firebase db
 
-![Alt text](images/architecture.svg)
+![Architecture](images/architecture.png)
 
 ## Environment variables
 * DEBUG=sim
