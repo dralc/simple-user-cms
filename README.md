@@ -5,6 +5,8 @@
 	- you have a Redis server up and running (local or hosted)
 	- OR you a hosted firebase db
 
+![Architecture](images/architecture.png)
+
 ## Environment variables
 * DEBUG=sim
 * SIM_DATASOURCE=redis OR firebase
