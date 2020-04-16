@@ -11,7 +11,7 @@ const userArg = process.argv[2];
 const fs = require('fs');
 const path = require('path');
 
-if (Number.isInteger(userArg)) {
+if (Number.isInteger(parseInt(userArg))) {
 	addUsers(userArg);
 } else {
 	addUsersFromFile(userArg);
@@ -23,10 +23,13 @@ async function addUsersFromFile(filePath) {
 			throw er;
 		}
 
-		let ar = JSON.parse(dat.toString());
+		const ar = JSON.parse(dat.toString());
+		const addedUsers = [];
 		for (let user of ar) {
-			await datasource.add(user);
+			addedUsers.push(datasource.add(user));
 		}
+
+		await Promise.all(addedUsers);
 
 		console.log(`Added ${ar.length} users`);
 		process.exit(0);
@@ -34,6 +37,7 @@ async function addUsersFromFile(filePath) {
 }
 
 async function addUsers(count) {
+	const addedUsers = [];
 	for(let i=0; i<count; i++) {
 		let user = {
 			name: faker.name.findName(),
@@ -42,8 +46,10 @@ async function addUsers(count) {
 			role: faker.random.boolean()
 		};
 		
-		await datasource.add(user);
+		addedUsers.push(datasource.add(user));
 	}
+
+	await Promise.all(addedUsers);
 
 	console.log(`Added ${count} users`);
 	process.exit(0);

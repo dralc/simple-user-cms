@@ -17,9 +17,11 @@ debug('sim');
 
 let redis;
 if ( !process.env.SIM_STUB_DATASOURCE ) {
-	redis = new Redis(
-			process.env.SIM_REDIS_PORT || 6379,
-			process.env.SIM_REDIS_HOST || 'localhost');
+	redis = new Redis({
+		port: process.env.SIM_REDIS_PORT || 6379,
+		host: process.env.SIM_REDIS_HOST || 'localhost',
+		password: process.env.SIM_REDIS_AUTH || '',
+	});
 }
 
 /**
@@ -38,7 +40,7 @@ exports.add = async user => {
 			'address', user.address,
 			'role', user.role);
 
-		redis.hset(INDEX_NAME, user.name.toLowerCase(), nextUserId);
+		await redis.hset(INDEX_NAME, user.name.toLowerCase(), nextUserId);
 
 		return { id: userKey };
 
