@@ -2,7 +2,7 @@ import { request } from 'graphql-request';
 import avaTest, { TestInterface } from 'ava';  // NB. ava 3.x needs latest nodejs 10, 12, 13
 import * as http from 'http';
 import sinon from 'sinon';
-import factory from '../appGraphql';
+import { factory }from '../appGraphql';
 import { DataNotFoundError } from '../datasource/DatasourceErrors';
 import { hasSameProps } from '../utils';
 import { QUERY_user, QUERY_userList, MUTATION_createUser, MUTATION_removeUser } from "./gqlQueries";
@@ -67,7 +67,7 @@ test.beforeEach(async t => {
 
 	t.context.server = http.createServer(app);
 	const serverUrl = await testListen(t.context.server);
-	t.context.serverUrl = `${serverUrl}/graphql`;
+	t.context.serverUrl = `${serverUrl}${process.env.SIM_GQL_PATH}`;
 });
 
 test.afterEach.always(t => {

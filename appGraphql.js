@@ -1,3 +1,4 @@
+const serverlessHttp = require('serverless-http');
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const { typeDefs } = require('./typeDefs.js');
@@ -19,9 +20,19 @@ function factory(ds=_datasource) {
 			datasource: ds || _datasource
 		}),
 	})
-	.applyMiddleware({ app });
+	.applyMiddleware({
+		app,
+		path: `${process.env.SIM_GQL_PATH}`
+	});
 
 	return app;
 }
 
-module.exports = factory;
+module.exports.factory = factory;
+
+module.exports.handler = async (event, context) => {
+	const app = factory();
+	const handler = serverlessHttp(app);
+	const result = await handler(event, context);
+	return result;
+};

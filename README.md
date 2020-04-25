@@ -48,7 +48,7 @@
 			"skipFiles": [
 				"<node_internals>/**"
 			],
-			"program": "${workspaceFolder}/bin/www",
+			"program": "${workspaceFolder}/bin/wwwgql",
 			"env": {
 				"DEBUG": "sim",
 				"SIM_APP": "appGraphql",
@@ -102,7 +102,8 @@
 			"env": {
 				"DEBUG": "sim",
 				"SIM_DATASOURCE": "redis",
-				"SIM_STUB_DATASOURCE": "1"
+				"SIM_STUB_DATASOURCE": "1",
+				"SIM_GQL_PATH": "/.netlify/api/graphql"
 			}
 		}
 	]
