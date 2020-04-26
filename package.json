@@ -3,18 +3,18 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "build:netlify": "netlify-lambda build express",
     "start": "npm run start:graphql",
     "start-rest": "node ./bin/www",
     "start:graphql": "DEBUG=sim SIM_APP=appGraphql SIM_DATASOURCE=redis node ./bin/wwwgql",
     "start:redis": "$REDIS_DIR/src/redis-server --daemonize yes",
     "start:rediscli": "$REDIS_DIR/src/redis-cli",
+    "dev:netlify": "netlify dev",
     "dev": "DEBUG=sim npm run start:redis && nodemon npm start",
     "seed:redis:fixed": "node mock/seedRedis fixtures/users.json",
     "test": "npm run test:unit && npm run test:integration",
-    "test:integration": "SIM_DATASOURCE=redis SIM_GQL_PATH='/.netlify/api/graphql' npx ava",
+    "test:integration": "SIM_DATASOURCE=redis SIM_GQL_PATH='/.netlify/functions/graphql' npx ava",
     "test:integration:watch": "npm run test:integration -- --watch",
-    "test:unit": "SIM_STUB_DATASOURCE=1 SIM_DATASOURCE=redis SIM_GQL_PATH='/.netlify/api/graphql' npx ava",
+    "test:unit": "SIM_STUB_DATASOURCE=1 SIM_DATASOURCE=redis SIM_GQL_PATH='/.netlify/functions/graphql' npx ava",
     "test:unit:watch": "npm run test:unit -- --watch"
   },
   "dependencies": {

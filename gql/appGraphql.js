@@ -1,10 +1,9 @@
-const serverlessHttp = require('serverless-http');
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const { typeDefs } = require('./typeDefs.js');
 const { resolvers } = require('./resolvers');
 /** @type {IDatasource}*/
-const _datasource = require(`./datasource/${process.env.SIM_DATASOURCE}`);
+const _datasource = require(`../datasource/${process.env.SIM_DATASOURCE}`);
 
 /**
  * Factory for creating an express app with ApolloServer middleware
@@ -28,11 +27,4 @@ function factory(ds=_datasource) {
 	return app;
 }
 
-module.exports.factory = factory;
-
-module.exports.handler = async (event, context) => {
-	const app = factory();
-	const handler = serverlessHttp(app);
-	const result = await handler(event, context);
-	return result;
-};
+exports.factory = factory;
