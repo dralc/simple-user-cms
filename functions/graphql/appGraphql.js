@@ -3,7 +3,7 @@ const { ApolloServer } = require('apollo-server-express');
 const { typeDefs } = require('./typeDefs.js');
 const { resolvers } = require('./resolvers');
 /** @type {IDatasource}*/
-const _datasource = require(`../datasource/${process.env.SIM_DATASOURCE}`);
+const _datasource = require(`../../datasource/redis`);
 
 /**
  * Factory for creating an express app with ApolloServer middleware

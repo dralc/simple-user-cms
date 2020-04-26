@@ -1,4 +1,4 @@
-const { factory } = require('../gql/appGraphql');
+const { factory } = require('./appGraphql');
 const serverlessHttp = require('serverless-http');
 const app = factory();
 
