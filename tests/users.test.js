@@ -6,7 +6,7 @@ const testListen = require('test-listen');
 const fetch = require('node-fetch');
 
 const sinon = require('sinon');
-const { DataNotFoundError } = require('../datasource/DatasourceErrors');
+const { DataNotFoundError } = require('../functions/graphql/datasource/DatasourceErrors');
 let isStubDatasource = !!process.env.SIM_STUB_DATASOURCE;
 
 /**

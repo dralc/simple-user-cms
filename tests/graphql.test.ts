@@ -3,7 +3,7 @@ import avaTest, { TestInterface } from 'ava';  // NB. ava 3.x needs latest nodej
 import * as http from 'http';
 import sinon from 'sinon';
 import { factory }from '../functions/graphql/appGraphql';
-import { DataNotFoundError } from '../datasource/DatasourceErrors';
+import { DataNotFoundError } from '../functions/graphql/datasource/DatasourceErrors';
 import { hasSameProps } from '../utils';
 import { QUERY_user, QUERY_userList, MUTATION_createUser, MUTATION_removeUser } from "./gqlQueries";
 import { ValidationError } from "./errors";

@@ -1,6 +1,6 @@
-const { isValidUser } = require('../../datasource/utils');
+const { isValidUser } = require('./datasource/utils');
 const { UserInputError } = require('apollo-server-express');
-const { DataNotFoundError } = require('../../datasource/DatasourceErrors');
+const { DataNotFoundError } = require('./datasource/DatasourceErrors');
 
 exports.resolvers = {
 	Query: {

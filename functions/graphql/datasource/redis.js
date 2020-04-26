@@ -8,7 +8,7 @@
 ----------------------------------------------------------------------------*/
 const INDEX_NAME = 'nameIndex';
 const USER_PREFIX = 'user:';
-require ('../types');
+require ('../../../types');
 const Redis = require('ioredis');
 const debug = require('debug');
 const { DataNotFoundError } = require('./DatasourceErrors');

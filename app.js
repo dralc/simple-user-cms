@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 /** @type {IDatasource}*/
-const datasource = require(`./datasource/${process.env.SIM_DATASOURCE}`);
+const datasource = require(`./functions/graphql/datasource/${process.env.SIM_DATASOURCE}`);
 var usersRouter = require('./routes/users')(datasource);
 
 var app = express();
