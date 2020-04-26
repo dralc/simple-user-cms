@@ -1,5 +1,5 @@
 [build]
-  functions = "api"
+  functions = "api-netlify"
   command = "# No build cmd needed"
 
 [context.production]
