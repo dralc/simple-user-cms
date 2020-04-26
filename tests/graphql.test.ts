@@ -2,7 +2,7 @@ import { request } from 'graphql-request';
 import avaTest, { TestInterface } from 'ava';  // NB. ava 3.x needs latest nodejs 10, 12, 13
 import * as http from 'http';
 import sinon from 'sinon';
-import { factory }from '../functions/graphql/appGraphql';
+import { factory }from '../graphql/appGraphql';
 import { DataNotFoundError } from '../datasource/DatasourceErrors';
 import { hasSameProps } from '../utils';
 import { QUERY_user, QUERY_userList, MUTATION_createUser, MUTATION_removeUser } from "./gqlQueries";

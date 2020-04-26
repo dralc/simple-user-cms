@@ -1,6 +1,6 @@
 [build]
-  command = "npm ci"
-  functions = "functions"
+  functions = "api"
+  command = "# No build cmd needed"
 
 [context.production]
 
