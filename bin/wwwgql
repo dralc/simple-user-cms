@@ -1,6 +1,8 @@
+#!/usr/bin/env node
+
 const debug = require('debug')('sim');
 const http = require('http');
-const factory = require('../appGraphql');
+const { factory } = require('../graphql/appGraphql');
 const app = factory();
 
 const port = process.env.PORT || 3000;

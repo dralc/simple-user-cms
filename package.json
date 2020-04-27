@@ -8,12 +8,14 @@
     "start:graphql": "DEBUG=sim SIM_APP=appGraphql SIM_DATASOURCE=redis node ./bin/wwwgql",
     "start:redis": "$REDIS_DIR/src/redis-server --daemonize yes",
     "start:rediscli": "$REDIS_DIR/src/redis-cli",
-    "dev": "DEBUG=sim npm run start:redis && nodemon npm start",
+    "dev:vercel": "now env pull && now dev",
+    "dev:netlify": "netlify dev",
+    "dev": "DEBUG=sim SIM_GQL_PATH=/graphql npm run start:redis && nodemon npm start",
     "seed:redis:fixed": "node mock/seedRedis fixtures/users.json",
     "test": "npm run test:unit && npm run test:integration",
-    "test:integration": "SIM_DATASOURCE=redis npx ava",
+    "test:integration": "SIM_DATASOURCE=redis SIM_GQL_PATH='/graphql' npx ava",
     "test:integration:watch": "npm run test:integration -- --watch",
-    "test:unit": "SIM_STUB_DATASOURCE=1 SIM_DATASOURCE=redis npx ava",
+    "test:unit": "SIM_STUB_DATASOURCE=1 SIM_DATASOURCE=redis SIM_GQL_PATH='/graphql' npx ava",
     "test:unit:watch": "npm run test:unit -- --watch"
   },
   "dependencies": {
@@ -23,13 +25,15 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "ioredis": "^4.16.0",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "serverless-http": "^2.3.2"
   },
   "devDependencies": {
     "@types/sinon": "^9.0.0",
     "ava": "^3.5.0",
     "faker": "^4.1.0",
     "graphql-request": "^1.8.2",
+    "husky": "^4.2.5",
     "node-fetch": "^2.6.0",
     "nodemon": "^2.0.2",
     "sinon": "^9.0.2",
@@ -44,10 +48,16 @@
       "tests/**/*test*"
     ],
     "extensions": [
-      "ts", "js"
+      "ts",
+      "js"
     ],
     "require": [
       "ts-node/register"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
   }
 }

@@ -1,0 +1,10 @@
+[build]
+  functions = "api-netlify"
+  command = "# No build cmd needed"
+
+[context.production]
+
+[context.production.environment]
+  NODE_ENV = "production"
+
+[context.deploy-preview]
