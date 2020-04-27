@@ -10,7 +10,7 @@
     "start:rediscli": "$REDIS_DIR/src/redis-cli",
     "dev:vercel": "now env pull && now dev",
     "dev:netlify": "netlify dev",
-    "dev": "DEBUG=sim npm run start:redis && nodemon npm start",
+    "dev": "DEBUG=sim SIM_GQL_PATH=/graphql npm run start:redis && nodemon npm start",
     "seed:redis:fixed": "node mock/seedRedis fixtures/users.json",
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "SIM_DATASOURCE=redis SIM_GQL_PATH='/graphql' npx ava",
