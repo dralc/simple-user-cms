@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
+        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -25,10 +25,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         
-    - name: Redis Server
+    - name: Start Redis instance
       uses: supercharge/redis-github-action@1.1.0
       with:
         redis-version: 5.0.8
     - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test:unit
+    - run: pwd
+    - name: Seed Redis
+      run: node ./mock/seedRedis ./fixtures/users.json
+      working-directory: ./
+    - run: npm test
