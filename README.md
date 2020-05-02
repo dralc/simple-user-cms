@@ -1,5 +1,7 @@
 # SimpleUserCMS
 
+![Node.js CI](https://github.com/dralc/SimpleUserCMS/workflows/Node.js%20CI/badge.svg)
+
 - This server provides endpoints for interacting with a Redis db.
 - It assumes:
 	- you have a Redis server up and running (local or hosted)
