@@ -39,7 +39,7 @@ jobs:
   DEPLOY:
     runs-on: ubuntu-latest
     needs: [TEST]
-    if: (github.head_ref == 'stage' || github.head_ref == 'master' || github.head_ref == 'ci-3')
+    if: contains(github.ref, 'stage') || contains(github.ref, 'master') || contains(github.ref, 'ci-3')
     
     steps:
     - name: Deploy
@@ -48,5 +48,5 @@ jobs:
         master_hook: ${{ secrets.DEPLOY_HOOK_MASTER }}
         deploy_hook: ${{ github.head_ref }}_hook
       run:
-        echo 'github.head_ref :'${{ github.head_ref }}
+        echo 'github.ref :'${{ github.ref }}
         # curl -X POST $${{ env.deploy_hook }}
