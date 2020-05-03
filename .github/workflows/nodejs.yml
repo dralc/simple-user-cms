@@ -7,7 +7,7 @@ on:
     branches: [ master, stage ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -36,12 +36,16 @@ jobs:
       
 #     - run: npm test
 
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test]
+    
+    steps:
     - name: Deploy
       env:
-#         stage_hook: ${{ secrets.DEPLOY_HOOK_STAGE }}
-        stage_hook: ${{ secrets.test_sec }}
+        stage_hook: ${{ secrets.DEPLOY_HOOK_STAGE }}
         master_hook: ${{ secrets.DEPLOY_HOOK_MASTER }}        
         deploy_hook: ${{github.base_ref}}_hook
       run:
-        echo $${{ env.deploy_hook }}
-#       run : curl -X POST $deploy_hook
+        echo ${{ toJson(github }}
+#         curl -X POST $deploy_hook
