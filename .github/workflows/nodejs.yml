@@ -18,40 +18,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-#     - name: Use Node.js ${{ matrix.node-version }}
-#       uses: actions/setup-node@v1
-#       with:
-#         node-version: ${{ matrix.node-version }}
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
         
-#     - name: Start Redis instance ${{ matrix.redis-version }}
-#       uses: supercharge/redis-github-action@1.1.0
-#       with:
-#         redis-version: ${{ matrix.redis-version }}
+    - name: Start Redis instance ${{ matrix.redis-version }}
+      uses: supercharge/redis-github-action@1.1.0
+      with:
+        redis-version: ${{ matrix.redis-version }}
 
-#     - run: npm ci
+    - run: npm ci
       
-#     - name: Seed Redis
-#       run: node ./mock/seedRedis ./fixtures/users.json
-#       working-directory: ./
+    - name: Seed Redis
+      run: node ./mock/seedRedis ./fixtures/users.json
+      working-directory: ./
       
-#     - run: npm test
-
-  DEPLOY-stage:
-    runs-on: ubuntu-latest
-    needs: [TEST]
-    if: contains(github.ref, 'stage')
-    
-    steps:
-    - name: Deploy stage
-      run:
-        now --confirm --token ${{ secrets.VERCEL_TOKEN }}
-
-  DEPLOY-master:
-    runs-on: ubuntu-latest
-    needs: [TEST]
-    if: contains(github.ref, 'master')
-
-    steps:
-    - name: Deploy master
-      run:
-        now --confirm --token ${{ secrets.VERCEL_TOKEN }} --prod
+    - run: npm test
