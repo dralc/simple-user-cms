@@ -38,10 +38,10 @@ jobs:
 
     - name: Deploy
       env:
-        stage_hook: ${{ secrets.DEPLOY_HOOK_STAGE }}
+        stage_hook: my-stage-url
         master_hook: ${{ secrets.DEPLOY_HOOK_MASTER }}        
         deploy_hook: ${{github.base_ref}}_hook
 
       run:
-        echo ${{ env.deploy_hook }}
+        echo $${{ env.deploy_hook }}
 #       run : curl -X POST $deploy_hook
