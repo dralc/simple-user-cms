@@ -40,10 +40,8 @@ jobs:
       env:
         stage_hook: ${{ secrets.DEPLOY_HOOK_STAGE }}
         master_hook: ${{ secrets.DEPLOY_HOOK_MASTER }}        
-        deploy_hook: ${{ join(github.base_ref, '_hook') }}
+        deploy_hook: ${{github.base_ref}}_hook
 
       run:
-#         echo ${{ toJson(github) }}
         echo ${{ env.deploy_hook }}
-        echo ${{ secrets.DEPLOY_HOOK_QA }}
 #       run : curl -X POST $deploy_hook
