@@ -35,23 +35,3 @@ jobs:
       working-directory: ./
       
     - run: npm test
-
-  DEPLOY-stage:
-    runs-on: ubuntu-latest
-    needs: [TEST]
-    if: contains(github.ref, 'stage')
-
-    steps:
-    - name: Deploy stage
-      run:
-        curl -X POST ${{ secrets.DEPLOY_HOOK_STAGE }}
-
-  DEPLOY-master:
-    runs-on: ubuntu-latest
-    needs: [TEST]
-    if: contains(github.ref, 'master')
-
-    steps:
-    - name: Deploy master
-      run:
-        curl -X POST ${{ secrets.DEPLOY_HOOK_MASTER }}
