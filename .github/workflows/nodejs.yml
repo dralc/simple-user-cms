@@ -35,12 +35,12 @@ jobs:
     #   working-directory: ./
       
     # - run: npm test
-    - run echo 'github.ref: '${{ github.ref }}
+    - run: echo 'github.ref:'${{ github.ref }}
 
   DEPLOY:
     runs-on: ubuntu-latest
     needs: [TEST]
-    if: contains(github.ref, 'stage') || contains(github.ref, 'master') || contains(github.ref, 'ci-3')
+    if: ( contains(github.ref, 'stage') || contains(github.ref, 'master') || contains(github.ref, 'ci-3') )
     
     steps:
     - name: Deploy
