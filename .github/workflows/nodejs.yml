@@ -18,28 +18,28 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
+    # - name: Use Node.js ${{ matrix.node-version }}
+    #   uses: actions/setup-node@v1
+    #   with:
+    #     node-version: ${{ matrix.node-version }}
         
-    - name: Start Redis instance ${{ matrix.redis-version }}
-      uses: supercharge/redis-github-action@1.1.0
-      with:
-        redis-version: ${{ matrix.redis-version }}
+    # - name: Start Redis instance ${{ matrix.redis-version }}
+    #   uses: supercharge/redis-github-action@1.1.0
+    #   with:
+    #     redis-version: ${{ matrix.redis-version }}
 
-    - run: npm ci
+    # - run: npm ci
       
-    - name: Seed Redis
-      run: node ./mock/seedRedis ./fixtures/users.json
-      working-directory: ./
+    # - name: Seed Redis
+    #   run: node ./mock/seedRedis ./fixtures/users.json
+    #   working-directory: ./
       
-    - run: npm test
+    # - run: npm test
 
   DEPLOY:
     runs-on: ubuntu-latest
     needs: [TEST]
-    if: (github.head_ref == 'stage' || github.head_ref == 'master')
+    # if: (github.head_ref == 'stage' || github.head_ref == 'master')
     
     steps:
     - name: Deploy
@@ -48,4 +48,5 @@ jobs:
         master_hook: ${{ secrets.DEPLOY_HOOK_MASTER }}
         deploy_hook: ${{ github.head_ref }}_hook
       run:
-        curl -X POST $${{ env.deploy_hook }}
+        echo 'github.head_ref :'${{ github.head_ref }}
+        # curl -X POST $${{ env.deploy_hook }}
