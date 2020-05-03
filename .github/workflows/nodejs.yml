@@ -35,6 +35,7 @@ jobs:
     #   working-directory: ./
       
     # - run: npm test
+    - run echo 'github.ref: '${{ github.ref }}
 
   DEPLOY:
     runs-on: ubuntu-latest
