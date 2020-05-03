@@ -18,23 +18,24 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
+    # - name: Use Node.js ${{ matrix.node-version }}
+    #   uses: actions/setup-node@v1
+    #   with:
+    #     node-version: ${{ matrix.node-version }}
         
-    - name: Start Redis instance ${{ matrix.redis-version }}
-      uses: supercharge/redis-github-action@1.1.0
-      with:
-        redis-version: ${{ matrix.redis-version }}
+    # - name: Start Redis instance ${{ matrix.redis-version }}
+    #   uses: supercharge/redis-github-action@1.1.0
+    #   with:
+    #     redis-version: ${{ matrix.redis-version }}
 
-    - run: npm ci
+    # - run: npm ci
       
-    - name: Seed Redis
-      run: node ./mock/seedRedis ./fixtures/users.json
-      working-directory: ./
+    # - name: Seed Redis
+    #   run: node ./mock/seedRedis ./fixtures/users.json
+    #   working-directory: ./
       
-    - run: npm test
+    # - run: npm test
+    - run: echo 'github.ref:'${{ github.ref }}
 
   DEPLOY-stage:
     runs-on: ubuntu-latest
@@ -55,4 +56,3 @@ jobs:
     - name: Deploy master
       run:
         curl -X POST ${{ secrets.DEPLOY_HOOK_MASTER }}
-   
