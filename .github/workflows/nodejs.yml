@@ -40,7 +40,7 @@ jobs:
       env:
         stage_hook: ${{ secrets.DEPLOY_HOOK_STAGE }}
         master_hook: ${{ secrets.DEPLOY_HOOK_MASTER }}        
-        deploy_hook: ${{ env[ join([github.ref, '_hook']) ] }}
+        deploy_hook: ${{ join([github.ref, '_hook']) }}
 
       run:
         echo ${{ toJson(github) }}
