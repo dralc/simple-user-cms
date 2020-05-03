@@ -39,7 +39,7 @@ jobs:
   DEPLOY:
     runs-on: ubuntu-latest
     needs: [TEST]
-    if: github.head_ref == 'stage' || github.head_ref == 'master'
+    if: (github.head_ref == 'stage' || github.head_ref == 'master')
     
     steps:
     - name: Deploy
