@@ -16,42 +16,43 @@ jobs:
         redis-version: [5.0.8]
 
     steps:
-    - uses: actions/checkout@v2
+#     - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
+#     - name: Use Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v1
+#       with:
+#         node-version: ${{ matrix.node-version }}
         
-    - name: Start Redis instance ${{ matrix.redis-version }}
-      uses: supercharge/redis-github-action@1.1.0
-      with:
-        redis-version: ${{ matrix.redis-version }}
+#     - name: Start Redis instance ${{ matrix.redis-version }}
+#       uses: supercharge/redis-github-action@1.1.0
+#       with:
+#         redis-version: ${{ matrix.redis-version }}
 
-    - run: npm ci
+#     - run: npm ci
       
-    - name: Seed Redis
-      run: node ./mock/seedRedis ./fixtures/users.json
-      working-directory: ./
+#     - name: Seed Redis
+#       run: node ./mock/seedRedis ./fixtures/users.json
+#       working-directory: ./
       
-    - run: npm test
+#     - run: npm test
+      - run: which now
 
-  DEPLOY-stage:
-    runs-on: ubuntu-latest
-    needs: [TEST]
-    if: contains(github.ref, 'stage')
+#   DEPLOY-stage:
+#     runs-on: ubuntu-latest
+#     needs: [TEST]
+#     if: contains(github.ref, 'stage')
 
-    steps:
-    - name: Deploy stage
-      run:
-        curl -X POST ${{ secrets.DEPLOY_HOOK_STAGE }}
+#     steps:
+#     - name: Deploy stage
+#       run:
+#         curl -X POST ${{ secrets.DEPLOY_HOOK_STAGE }}
 
-  DEPLOY-master:
-    runs-on: ubuntu-latest
-    needs: [TEST]
-    if: contains(github.ref, 'master')
+#   DEPLOY-master:
+#     runs-on: ubuntu-latest
+#     needs: [TEST]
+#     if: contains(github.ref, 'master')
 
-    steps:
-    - name: Deploy master
-      run:
-        curl -X POST ${{ secrets.DEPLOY_HOOK_MASTER }}
+#     steps:
+#     - name: Deploy master
+#       run:
+#         curl -X POST ${{ secrets.DEPLOY_HOOK_MASTER }}
