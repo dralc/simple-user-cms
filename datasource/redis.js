@@ -119,15 +119,16 @@ exports.getUsers = async ({ name }) => {
 	}, []);
 
 	// Look up each user and fill in user data
-	let userGot;
+	let pipe = redis.pipeline();
 	for (let user, i=0, len=userResults.length; i < len; i++) {
 		user = userResults[i];
-		// TODO use redis pipelining, https://github.com/luin/ioredis#pipelining
-		// use a callback on each hgetall() to merge in `id` field
-		userGot = await redis.hgetall(`${user.id}`);
-		normalizeUser(userGot);
-		userResults[i] = { ...user, ...userGot };
+		pipe.hgetall(`${user.id}`, (er, userGot) => {
+			normalizeUser(userGot);
+			userResults[i] = { ...user, ...userGot };
+		});
 	}
+
+	await pipe.exec();
 
 	return userResults;
 }
