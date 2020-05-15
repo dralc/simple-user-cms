@@ -3,22 +3,25 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
-    "start": "npm run start:graphql",
-    "start:fe": "sirv public",
-    "start-rest": "node ./bin/www",
-    "start:graphql": "DEBUG=sim SIM_APP=appGraphql SIM_GQL_PATH=/graphql SIM_DATASOURCE=redis SIM_REDIS_HOST=localhost SIM_REDIS_PORT=6379 node ./bin/wwwgql",
-    "start:redis": "$REDIS_DIR/src/redis-server --daemonize yes",
-    "start:rediscli": "$REDIS_DIR/src/redis-cli",
-    "dev:vercel": "now env pull && now dev",
+    "dev:ui": "rollup -c -w",
+    "dev:api": "npm run start:redis && nodemon --exec 'npm run start:graphql'",
+    "dev:vercel": "npm run start:redis && now dev",
     "dev:netlify": "netlify dev",
-    "dev": "rollup -c -w",
-    "dev:api": "npm run start:redis && nodemon npm start",
+
+    "build": "rollup -c",
+
+    "start": "sirv public",
+    "start-rest": "node ./bin/www",
+    "start:graphql": "node --require dotenv/config ./bin/wwwgql",
+    "start:redis": "redis-server --daemonize yes",
+    "start:rediscli": "redis-cli",
+
     "seed:redis:fixed": "node mock/seedRedis fixtures/users.json",
+
     "test": "npm run test:unit && npm run test:integration",
-    "test:integration": "SIM_DATASOURCE=redis SIM_GQL_PATH='/graphql' npx ava",
+    "test:integration": "npm run start:redis && npx ava",
     "test:integration:watch": "npm run test:integration -- --watch",
-    "test:unit": "SIM_STUB_DATASOURCE=1 SIM_DATASOURCE=redis SIM_GQL_PATH='/graphql' npx ava",
+    "test:unit": "SIM_STUB_DATASOURCE=1 npx ava",
     "test:unit:watch": "npm run test:unit -- --watch"
   },
   "dependencies": {
@@ -38,10 +41,10 @@
     "@rollup/plugin-node-resolve": "^7.0.0",
     "@types/sinon": "^9.0.0",
     "ava": "^3.5.0",
+    "dotenv": "^8.2.0",
     "faker": "^4.1.0",
     "husky": "^4.2.5",
     "node-fetch": "^2.6.0",
-    "nodemon": "^2.0.2",
     "rollup": "^1.20.0",
     "rollup-plugin-livereload": "^1.0.0",
     "rollup-plugin-svelte": "^5.0.3",
@@ -63,6 +66,7 @@
       "js"
     ],
     "require": [
+      "dotenv/config",
       "ts-node/register"
     ]
   },
