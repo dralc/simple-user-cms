@@ -101,8 +101,23 @@ exports.get = async ({ id, name }) => {
  * @returns {Promise<Array<UserResult>}
  */
 exports.getUsers = async ({ name }) => {
-	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name.toLowerCase()}*`);
-	const matchedUsers = matches[1]; // Format ['John Doe', '11', 'Bob Scott ', '51']
+	const indexScan = new Promise((res, rej) => {
+		const stream = redis.hscanStream(INDEX_NAME, {
+			match: `*${name.toLowerCase()}*`
+		});
+		let allUsers = [];
+	
+		stream.on('data', users => {
+			allUsers = [...allUsers, ...users];
+		});
+		stream.on('end', () => {
+			console.log(allUsers.length/2);
+			res(allUsers);
+		});
+	});
+
+	// Format ['John Doe', '11', 'Bob Scott ', '51']
+	const matchedUsers = await indexScan;
 
 	if (matchedUsers.length === 0) {
 		throw new DataNotFoundError( { input: name }, 'Data not found' );
