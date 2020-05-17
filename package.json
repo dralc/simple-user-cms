@@ -16,7 +16,7 @@
     "start:redis": "redis-server --daemonize yes",
     "start:rediscli": "redis-cli",
 
-    "seed:redis:fixed": "node mock/seedRedis fixtures/users.json",
+    "seed:redis:fixed": "node --require dotenv/config mock/seedRedis fixtures/users.json",
 
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "npm run start:redis && npx ava",

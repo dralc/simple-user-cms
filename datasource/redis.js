@@ -81,13 +81,20 @@ exports.remove = async id => {
  * @returns {Promise<UserResult>}
  */
 exports.get = async ({ id, name }) => {
-	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name.toLowerCase()}*`);
+	const indexScan = new Promise(res => {
+		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*` });
+		let allUsers = [];
+		stream.on('data', users => allUsers = [...allUsers, ...users]);
+		stream.on('end', () => res(allUsers));
+	});
 
-	if (matches[1].length === 0) {
+	const matches = await indexScan;
+
+	if (matches.length === 0) {
 		throw new DataNotFoundError( { input: id || name }, 'Data not found' );
 	}
 
-	const userKey = `${USER_PREFIX}${matches[1][1]}`;
+	const userKey = `${USER_PREFIX}${matches[1]}`;
 	const user = await redis.hgetall(userKey);
 	normalizeUser(user);
 
@@ -102,18 +109,10 @@ exports.get = async ({ id, name }) => {
  */
 exports.getUsers = async ({ name }) => {
 	const indexScan = new Promise((res, rej) => {
-		const stream = redis.hscanStream(INDEX_NAME, {
-			match: `*${name.toLowerCase()}*`
-		});
+		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*` });
 		let allUsers = [];
-	
-		stream.on('data', users => {
-			allUsers = [...allUsers, ...users];
-		});
-		stream.on('end', () => {
-			console.log(allUsers.length/2);
-			res(allUsers);
-		});
+		stream.on('data', users => allUsers = [...allUsers, ...users]);
+		stream.on('end', () => res(allUsers));
 	});
 
 	// Format ['John Doe', '11', 'Bob Scott ', '51']
