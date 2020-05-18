@@ -34,4 +34,8 @@ jobs:
       run: node ./mock/seedRedis ./fixtures/users.json
       working-directory: ./
       
-    - run: npm test
+    - name: Run tests
+      env:
+        SIM_DATASOURCE: redis
+        SIM_GQL_PATH: /api/graphql
+      run: npm test
