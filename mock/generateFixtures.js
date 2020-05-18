@@ -1,7 +1,7 @@
 /**
  * Writes fixture file to `fixtures/users.json`
  * Usage:
- * 1. > node generateFixtures 500
+ * 1. > node mock/generateFixtures 500
  */
 
 const fs = require('fs');

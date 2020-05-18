@@ -8,6 +8,7 @@
 ----------------------------------------------------------------------------*/
 const INDEX_NAME = 'nameIndex';
 const USER_PREFIX = 'user:';
+const SCAN_COUNT = 10000;
 require ('../types');
 const Redis = require('ioredis');
 const debug = require('debug');
@@ -81,13 +82,20 @@ exports.remove = async id => {
  * @returns {Promise<UserResult>}
  */
 exports.get = async ({ id, name }) => {
-	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name.toLowerCase()}*`);
+	const indexScan = new Promise(res => {
+		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT });
+		let allUsers = [];
+		stream.on('data', users => allUsers = [...allUsers, ...users]);
+		stream.on('end', () => res(allUsers));
+	});
 
-	if (matches[1].length === 0) {
+	const matches = await indexScan;
+
+	if (matches.length === 0) {
 		throw new DataNotFoundError( { input: id || name }, 'Data not found' );
 	}
 
-	const userKey = `${USER_PREFIX}${matches[1][1]}`;
+	const userKey = `${USER_PREFIX}${matches[1]}`;
 	const user = await redis.hgetall(userKey);
 	normalizeUser(user);
 
@@ -101,8 +109,15 @@ exports.get = async ({ id, name }) => {
  * @returns {Promise<Array<UserResult>}
  */
 exports.getUsers = async ({ name }) => {
-	const matches = await redis.hscan(INDEX_NAME, 0, 'MATCH', `*${name.toLowerCase()}*`);
-	const matchedUsers = matches[1]; // Format ['John Doe', '11', 'Bob Scott ', '51']
+	const indexScan = new Promise((res, rej) => {
+		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT});
+		let allUsers = [];
+		stream.on('data', users => allUsers = [...allUsers, ...users]);
+		stream.on('end', () => res(allUsers));
+	});
+
+	// Format ['John Doe', '11', 'Bob Scott ', '51']
+	const matchedUsers = await indexScan;
 
 	if (matchedUsers.length === 0) {
 		throw new DataNotFoundError( { input: name }, 'Data not found' );
@@ -119,15 +134,16 @@ exports.getUsers = async ({ name }) => {
 	}, []);
 
 	// Look up each user and fill in user data
-	let userGot;
+	let pipe = redis.pipeline();
 	for (let user, i=0, len=userResults.length; i < len; i++) {
 		user = userResults[i];
-		// TODO use redis pipelining, https://github.com/luin/ioredis#pipelining
-		// use a callback on each hgetall() to merge in `id` field
-		userGot = await redis.hgetall(`${user.id}`);
-		normalizeUser(userGot);
-		userResults[i] = { ...user, ...userGot };
+		pipe.hgetall(`${user.id}`, (er, userGot) => {
+			normalizeUser(userGot);
+			userResults[i] = { ...user, ...userGot };
+		});
 	}
+
+	await pipe.exec();
 
 	return userResults;
 }
