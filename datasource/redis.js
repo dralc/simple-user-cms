@@ -82,7 +82,7 @@ exports.remove = async id => {
  */
 exports.get = async ({ id, name }) => {
 	const indexScan = new Promise(res => {
-		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*` });
+		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: 1000 });
 		let allUsers = [];
 		stream.on('data', users => allUsers = [...allUsers, ...users]);
 		stream.on('end', () => res(allUsers));
@@ -109,7 +109,7 @@ exports.get = async ({ id, name }) => {
  */
 exports.getUsers = async ({ name }) => {
 	const indexScan = new Promise((res, rej) => {
-		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*` });
+		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: 1000});
 		let allUsers = [];
 		stream.on('data', users => allUsers = [...allUsers, ...users]);
 		stream.on('end', () => res(allUsers));
