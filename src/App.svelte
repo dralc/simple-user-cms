@@ -17,7 +17,7 @@
 	let search;
 	let nameToFind;
 
-	$: if (nameToFind) {
+	$: if (nameToFind && nameToFind.length > 2) {
 		search = request(SERVER_URL, QUERY_user, { name: nameToFind });
 	}
 
