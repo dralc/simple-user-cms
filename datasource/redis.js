@@ -8,6 +8,7 @@
 ----------------------------------------------------------------------------*/
 const INDEX_NAME = 'nameIndex';
 const USER_PREFIX = 'user:';
+const SCAN_COUNT = 10000;
 require ('../types');
 const Redis = require('ioredis');
 const debug = require('debug');
@@ -82,7 +83,7 @@ exports.remove = async id => {
  */
 exports.get = async ({ id, name }) => {
 	const indexScan = new Promise(res => {
-		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: 1000 });
+		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT });
 		let allUsers = [];
 		stream.on('data', users => allUsers = [...allUsers, ...users]);
 		stream.on('end', () => res(allUsers));
@@ -109,7 +110,7 @@ exports.get = async ({ id, name }) => {
  */
 exports.getUsers = async ({ name }) => {
 	const indexScan = new Promise((res, rej) => {
-		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: 1000});
+		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT});
 		let allUsers = [];
 		stream.on('data', users => allUsers = [...allUsers, ...users]);
 		stream.on('end', () => res(allUsers));
