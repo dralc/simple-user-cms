@@ -4,7 +4,7 @@ import * as http from 'http';
 import sinon from 'sinon';
 import { factory }from '../graphql/appGraphql';
 import { DataNotFoundError } from '../datasource/DatasourceErrors';
-import { hasSameProps } from '../utils';
+import { hasSameProps, getFuncPerf } from '../utils';
 import { QUERY_user, QUERY_userList, MUTATION_createUser, MUTATION_removeUser } from "./gqlQueries";
 import { ValidationError } from "./errors";
 
@@ -13,9 +13,7 @@ const test = avaTest as TestInterface<{ testProps, ds_get, ds_getUsers, server, 
 let isStubDatasource = !!process.env.SIM_STUB_DATASOURCE;
 
 function stubApp(ctx) {
-	const users = require('../fixtures/users.json');
-	const id = 'maddisonsId';
-	const id2 = 'maddissonsId2';
+	const id = 'patrickId';
 	const badName = ctx.testProps.badName;
 	const goodName = ctx.testProps.goodName;
 	const stubDs = {
@@ -28,12 +26,12 @@ function stubApp(ctx) {
 	stubDs.get.withArgs({ name: badName })
 		.throws(new DataNotFoundError( { input: badName } ));
 	stubDs.get.withArgs({ name: goodName })
-		.resolves( { id, ...users[3] } );
+		.resolves( { id, name:'', email:'', address:'', role:false } );
 	
 	stubDs.getUsers.withArgs( { name: badName } )
 		.throws(new DataNotFoundError( { input: badName } ));
 	stubDs.getUsers.withArgs( { name: goodName } )
-		.resolves( [ { id, ...users[3] }, { id: id2, ...users[332] } ] );
+		.resolves( (new Array(47)).fill( { id, name:'', email:'', address:'', role:false } ));
 
 	stubDs.add.withArgs( ctx.testProps.validUser )
 		.resolves( { id: ctx.testProps.validUserId } );
@@ -47,7 +45,7 @@ function stubApp(ctx) {
 test.beforeEach(async t => {
 	t.context.testProps = {
 		badName: 'bad name here',
-		goodName: 'Maddison',
+		goodName: 'Patrick',
 		validUserId: 'userId:987123',
 		validUser: {
 			name: 'Alverta Lang',
@@ -90,7 +88,7 @@ test('Get a user', async t => {
 		t.truthy(payload.user.id, 'a user should have been found');
 	}
 	catch (error) {
-		console.error(JSON.stringify(error, null, 2));
+		t.fail(JSON.stringify(error, null, 2));
 	}
 });
 
@@ -107,12 +105,11 @@ test('Get a list of users', async t => {
 		
 		// Test a valid 'name'
 		const users = await request(ctx.serverUrl, QUERY_userList, { name: ctx.testProps.goodName } );
-		t.is(users.userList.length, 2 );
+		t.is(users.userList.length, 47 );
 		t.true(hasSameProps( users.userList[0], { id:'',name:'',email:'',address:'',role:'' } ));
 	}
 	catch (er) {
-		console.error(JSON.stringify(er, null, 2));
-		throw er;
+		t.fail(JSON.stringify(er, null, 2));
 	}
 });
 
@@ -128,7 +125,7 @@ test('Create a user: invalid user', async t => {
 		t.is(res.response.errors.length, 4, 'should have the right no. of validation errors');
 	}
 	catch (er) {
-		console.error(JSON.stringify(er, null, 2));
+		t.fail(JSON.stringify(er, null, 2));
 	}
 });
 
@@ -146,6 +143,19 @@ test('Create a valid user, then remove it ', async t => {
 		t.true(res.removeUser.success);
 	}
 	catch (er) {
-		console.error(JSON.stringify(er, null, 2));
+		t.fail(JSON.stringify(er, null, 2));
 	}
+});
+
+test('Response time - QUERY_userList', async t => {
+	const pad = 20;
+	const avg_time_max = { local: 52 + pad, ci: 50 + pad };
+
+	let perf = await getFuncPerf(3, () => request(t.context.serverUrl, QUERY_userList, { name: 'Patrick' }));
+
+	t.log('Users found    :', perf.response.userList.length);
+	t.log('Durations (ms) :', perf.durations);
+	t.log('Average (ms)   :', perf.avg);
+
+	t.truthy(perf.avg < (process.env.CI ? avg_time_max.ci : avg_time_max.local), `Average (${perf.avg}) is too high`);
 });

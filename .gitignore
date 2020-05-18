@@ -3,6 +3,10 @@
 todo.md
 # Local Netlify folder
 .netlify
-public
 .now
-.env
+.env*
+
+/node_modules/
+/public/build/
+
+.DS_Store
