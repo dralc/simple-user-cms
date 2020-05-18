@@ -38,4 +38,4 @@ jobs:
       env:
         SIM_DATASOURCE: redis
         SIM_GQL_PATH: /api/graphql
-      run: npm test
+      run: npm run test:ci
