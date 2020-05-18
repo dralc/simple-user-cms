@@ -4,10 +4,9 @@ import * as http from 'http';
 import sinon from 'sinon';
 import { factory }from '../graphql/appGraphql';
 import { DataNotFoundError } from '../datasource/DatasourceErrors';
-import { hasSameProps } from '../utils';
+import { hasSameProps, getFuncPerf } from '../utils';
 import { QUERY_user, QUERY_userList, MUTATION_createUser, MUTATION_removeUser } from "./gqlQueries";
 import { ValidationError } from "./errors";
-import { performance, PerformanceObserver } from 'perf_hooks';
 
 const testListen = require('test-listen');
 const test = avaTest as TestInterface<{ testProps, ds_get, ds_getUsers, server, serverUrl:string }>;
@@ -149,37 +148,12 @@ test('Create a valid user, then remove it ', async t => {
 });
 
 test('Response time - QUERY_userList', async t => {
-	const REQUEST_ITERATIONS = 5;
-	const AVG_TIME_MAX = 120;
-	const SEARCH_NAME = 'Patrick';
-	const durations = [];
+	const AVG_TIME_MAX = 200;
+	let perf = await getFuncPerf(2, () => request(t.context.serverUrl, QUERY_userList, { name: 'Patrick' }));
 
-	let countPromise = new Promise(async resolve => {
-		let response;
-		const perfObs = new PerformanceObserver((list, obs) => {
-			durations.push(list.getEntries()[0].duration);
-			
-			if (durations.length === REQUEST_ITERATIONS) {
-				let avg = durations.reduce((acc, v) => { return acc + v }, 0) / durations.length;
-				console.log('Users found    :', response.userList.length);
-				console.log('Durations (ms) :', durations);
-				console.log('Average (ms)   :', avg);
-				performance.clearMarks();
-				obs.disconnect();
-				resolve(avg);
-			}
-		});
-		
-		perfObs.observe({ entryTypes: ['measure'], buffered: true});
-	
-		for (let i=0; i < REQUEST_ITERATIONS; i++) {
-			performance.mark(`${i}:A`);
-			response = await request(t.context.serverUrl, QUERY_userList, { name: SEARCH_NAME });
-			performance.mark(`${i}:B`);
-			performance.measure('userList query', `${i}:A`, `${i}:B`);
-		}
-	});
-	
-	let avg = await countPromise;
-	t.truthy(avg < AVG_TIME_MAX, `Average (${avg}) is too high`);
+	t.log('Users found    :', perf.response.userList.length);
+	t.log('Durations (ms) :', perf.durations);
+	t.log('Average (ms)   :', perf.avg);
+
+	t.truthy(perf.avg < AVG_TIME_MAX, `Average (${perf.avg}) is too high`);
 });
