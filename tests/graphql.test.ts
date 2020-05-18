@@ -148,12 +148,14 @@ test('Create a valid user, then remove it ', async t => {
 });
 
 test('Response time - QUERY_userList', async t => {
-	const AVG_TIME_MAX = 200;
-	let perf = await getFuncPerf(2, () => request(t.context.serverUrl, QUERY_userList, { name: 'Patrick' }));
+	const pad = 50;
+	const avg_time_max = { local: 140 + pad, ci: 330 + pad };
+
+	let perf = await getFuncPerf(3, () => request(t.context.serverUrl, QUERY_userList, { name: 'Patrick' }));
 
 	t.log('Users found    :', perf.response.userList.length);
 	t.log('Durations (ms) :', perf.durations);
 	t.log('Average (ms)   :', perf.avg);
 
-	t.truthy(perf.avg < AVG_TIME_MAX, `Average (${perf.avg}) is too high`);
+	t.truthy(perf.avg < (process.env.CI ? avg_time_max.ci : avg_time_max.local), `Average (${perf.avg}) is too high`);
 });
