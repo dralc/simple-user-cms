@@ -1,10 +1,8 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ master, stage ]
   pull_request:
-    branches: [ master, stage ]
+    branches: [ master ]
 
 jobs:
   TEST:
