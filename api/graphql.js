@@ -4,15 +4,24 @@ const app = factory();
 const handler = serverlessHttp(app);
 
 module.exports = async (req, res) => {
+
+	// Build event object for this particular case
+	// Supports GET and POST requests
+	const isGet = /GET/.test(req.method);
+	let body = !isGet ? JSON.stringify(req.body) : undefined;
+	let queryStringParameters = isGet ? req.query : undefined;
+
 	const event = {
 		headers: { 'Content-Type': 'application/json'},
-		httpMethod: 'POST',
+		httpMethod: req.method,
 		isBase64Encoded: false,
 		path: '/api/graphql',
-		body: JSON.stringify(req.body),
+		body,
+		queryStringParameters,
 	};
 	
 	const result = await handler(event);
 
-	res.json(JSON.parse(result.body));
+	res.setHeader('cache-control', 'public, max-age=60');
+	res.send(result.body);
 }

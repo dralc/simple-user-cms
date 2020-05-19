@@ -1,8 +1,8 @@
 <script>
-	import { request } from 'graphql-request';
+	import { callGql } from './utils';
 
 	const SERVER_URL = '/api/graphql'
-	const QUERY_user = `
+	const QUERY = `
 	query ($name: String) {
 		userList(name: $name) {
 			id
@@ -17,11 +17,12 @@
 	let nameToFind;
 
 	$: if (nameToFind && nameToFind.length > 2) {
-		search = request(SERVER_URL, QUERY_user, { name: nameToFind });
+		search = callGql(SERVER_URL, QUERY, { name: nameToFind });
 	}
 </script>
 
 <main>
+	<h1>Simple User CMS</h1>
 	<input type="text" bind:value={nameToFind} name="user" placeholder="search user"/>
 	{#await search}
 		<p>...</p>
@@ -29,7 +30,7 @@
 		{#if res}
 			<table id="sugg">
 				<tbody>
-				{#each res.userList as user}
+				{#each res.data.userList as user}
 					<tr>
 						<td data-id={user.id}>{user.name}</td>
 						<td>
@@ -46,7 +47,7 @@
 			</table>
 		{/if}
 	{:catch er}
-		<p>{ er.response.errors[0].message }</p>
+		<p>{JSON.parse(er.message).errors[0].message}</p>
 	{/await}
 </main>
 
