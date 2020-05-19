@@ -3,7 +3,7 @@
   "version": "3.1.0",
   "private": true,
   "scripts": {
-    "dev:ui": "rollup -c -w",
+    "dev": "rollup -c -w",
     "dev:api": "npm run start:redis && nodemon --exec 'npm run start:graphql'",
     "dev:vercel": "npm run start:redis && now dev",
     "dev:netlify": "netlify dev",

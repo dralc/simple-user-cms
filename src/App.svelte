@@ -1,7 +1,6 @@
 <script>
 	import { request } from 'graphql-request';
 
-	const hasData = false;
 	const SERVER_URL = '/api/graphql'
 	const QUERY_user = `
 	query ($name: String) {
@@ -20,8 +19,6 @@
 	$: if (nameToFind && nameToFind.length > 2) {
 		search = request(SERVER_URL, QUERY_user, { name: nameToFind });
 	}
-
-	const clean = str => str.replace(/: {"response.+/, '');
 </script>
 
 <main>
@@ -49,7 +46,7 @@
 			</table>
 		{/if}
 	{:catch er}
-		<p>{ clean(er.message) }</p>
+		<p>{ er.response.errors[0].message }</p>
 	{/await}
 </main>
 
