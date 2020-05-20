@@ -31,16 +31,25 @@ export async function callGql(url, query, variables) {
 		body = gql(query)(variables);
 	}
 
-	const res = await fetch(_url, {
-		method,
-		body,
-	});
+	const res = await fetch(_url, { method, body });
 
-	const ret = await res.json();
+	let ret;
+	if (res.ok) {
+		ret = await res.json();
 
-	if (ret.errors) {
+		if (ret.errors) {
+			throw new Error( JSON.stringify(ret) );
+		}
+
+		return ret;
+	}
+	else {
+		ret = {
+			errors: [{
+				message: `${res.status} ${res.statusText}`,
+			}]
+		};
+
 		throw new Error( JSON.stringify(ret) );
 	}
-	
-	return ret;
 }
