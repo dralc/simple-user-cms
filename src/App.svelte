@@ -1,5 +1,5 @@
 <script>
-	import { callGql } from './utils';
+	import { callGql } from './utils.ts';
 
 	const SERVER_URL = '/api/graphql'
 	const QUERY = `
