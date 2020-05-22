@@ -26,7 +26,8 @@ module.exports = async (req, res) => {
 	
 	const result = await handler(event);
 
-	res.setHeader('Content-Type', 'application/json');
-	res.setHeader('cache-control', 'public, max-age=60');
+	for (let key in headers) {
+		res.setHeader(key, headers[key]);
+	}
 	res.send(result.body);
 }
