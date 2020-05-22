@@ -1,13 +1,21 @@
-import { request } from 'graphql-request';
 import avaTest, { TestInterface } from 'ava';  // NB. ava 3.x needs latest nodejs 10, 12, 13
 import * as http from 'http';
 import sinon from 'sinon';
 import { factory }from '../graphql/appGraphql';
 import { DataNotFoundError } from '../datasource/DatasourceErrors';
 import { hasSameProps, getFuncPerf } from '../utils';
+import nodeFetch from 'node-fetch';
+import { callGql } from '../src/utils';
 import { QUERY_user, QUERY_userList, MUTATION_createUser, MUTATION_removeUser } from "./gqlQueries";
 import { ValidationError } from "./errors";
 
+/**
+ * Inject a fetch API compliant function to use
+ */
+let request = async (url, query, vars) => {
+	// @ts-ignore
+	return await callGql(url, query, vars, { fetch: nodeFetch });
+};
 const testListen = require('test-listen');
 const test = avaTest as TestInterface<{ testProps, ds_get, ds_getUsers, server, serverUrl:string }>;
 let isStubDatasource = !!process.env.SIM_STUB_DATASOURCE;
@@ -81,14 +89,17 @@ test('Get a user', async t => {
 		let err = await t.throwsAsync( () => {
 			return request(ctx.serverUrl, QUERY_user, { name: ctx.testProps.badName });
 		}, null, 'should have thrown bad input error');
-		t.is(err['response'].errors[0].extensions.code, 'BAD_USER_INPUT');
+
+		let err_o = JSON.parse(err.message);
+		t.is(err_o.errors[0].extensions.code, 'BAD_USER_INPUT');
 
 		// Test a valid 'name'
 		let payload = await request(ctx.serverUrl, QUERY_user, { name: ctx.testProps.goodName });
-		t.truthy(payload.user.id, 'a user should have been found');
+		t.truthy(payload.data.user.id, 'a user should have been found');
 	}
-	catch (error) {
-		t.fail(JSON.stringify(error, null, 2));
+	catch (er) {
+		t.fail(er.message);
+		t.log(er.stack);
 	}
 });
 
@@ -101,15 +112,17 @@ test('Get a list of users', async t => {
 			return request(ctx.serverUrl, QUERY_userList, { name: ctx.testProps.badName } )
 		}, null, 'should have thrown bad input error');
 
-		t.is(err['response'].errors[0].extensions.code, 'BAD_USER_INPUT');
+		let err_o = JSON.parse(err.message);
+		t.is(err_o.errors[0].extensions.code, 'BAD_USER_INPUT');
 		
 		// Test a valid 'name'
 		const users = await request(ctx.serverUrl, QUERY_userList, { name: ctx.testProps.goodName } );
-		t.is(users.userList.length, 47 );
-		t.true(hasSameProps( users.userList[0], { id:'',name:'',email:'',address:'',role:'' } ));
+		t.is(users.data.userList.length, 47 );
+		t.true(hasSameProps( users.data.userList[0], { id:'',name:'',email:'',address:'',role:'' } ));
 	}
 	catch (er) {
-		t.fail(JSON.stringify(er, null, 2));
+		t.fail(er.message);
+		t.log(er.stack);
 	}
 });
 
@@ -122,10 +135,12 @@ test('Create a user: invalid user', async t => {
 			return request(ctx.serverUrl, MUTATION_createUser, invalidUser);
 		}, null, 'should have thrown validation error') as ValidationError;
 		
-		t.is(res.response.errors.length, 4, 'should have the right no. of validation errors');
+		let err_o = JSON.parse(res.message);
+		t.is(err_o.errors.length, 4, 'should have the right no. of validation errors');
 	}
 	catch (er) {
-		t.fail(JSON.stringify(er, null, 2));
+		t.fail(er.message);
+		t.log(er.stack);
 	}
 });
 
@@ -134,16 +149,17 @@ test('Create a valid user, then remove it ', async t => {
 		const ctx = t.context;
 		const validUser = ctx.testProps.validUser;
 		let res = await request(ctx.serverUrl, MUTATION_createUser, validUser);
-		t.true(res.createUser.success);
-		t.true(hasSameProps(res.createUser.user, { id:'', name:'', email:'', address:'', role:'' }));
-		t.truthy(res.createUser.user.id);
+		t.true(res.data.createUser.success);
+		t.true(hasSameProps(res.data.createUser.user, { id:'', name:'', email:'', address:'', role:'' }));
+		t.truthy(res.data.createUser.user.id);
 
 		// Test removing the added user
-		res = await request(ctx.serverUrl, MUTATION_removeUser, { id: res.createUser.user.id } );
-		t.true(res.removeUser.success);
+		res = await request(ctx.serverUrl, MUTATION_removeUser, { id: res.data.createUser.user.id } );
+		t.true(res.data.removeUser.success);
 	}
 	catch (er) {
-		t.fail(JSON.stringify(er, null, 2));
+		t.fail(er.message);
+		t.log(er.stack);
 	}
 });
 
@@ -153,7 +169,7 @@ test('Response time - QUERY_userList', async t => {
 
 	let perf = await getFuncPerf(3, () => request(t.context.serverUrl, QUERY_userList, { name: 'Patrick' }));
 
-	t.log('Users found    :', perf.response.userList.length);
+	t.log('Users found    :', perf.response.data.userList.length);
 	t.log('Durations (ms) :', perf.durations);
 	t.log('Average (ms)   :', perf.avg);
 
