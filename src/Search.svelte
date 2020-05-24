@@ -1,15 +1,11 @@
 <script>
-	import { callGql } from './utils.ts';
+	import { callGql, showError } from './utils.ts';
 
 	const SERVER_URL = '/api/graphql'
-	const QUERY = `
-	query ($name: String) {
+	const QUERY =
+	`query ($name: String) {
 		userList(name: $name) {
-			id
-			name
-			address
-			email
-			role
+			id name address email role
 		}
 	}`;
 
@@ -56,7 +52,7 @@
 		</table>
 	{/if}
 {:catch er}
-	<p>{JSON.parse(er.message).errors[0].message}</p>
+	<p>{ showError(er) }</p>
 {/await}
 
 <style>
