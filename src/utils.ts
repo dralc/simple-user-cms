@@ -21,9 +21,9 @@ export function showError(error, verbose) {
 /**
  * Use GET for queries and POST for mutations
  * 
- * @param {*} url 
- * @param {*} query 
- * @param {*} variables 
+ * @param {String} url 
+ * @param {String} query 
+ * @param {Object} variables 
  */
 export async function callGql(url, query, variables, options={fetch}) {
 	const fetchFn = options.fetch;
