@@ -25,17 +25,17 @@
 		);
 	
 	let addUser_prom;
+	let disableMsg;
 
 	function addUser() {
 		if ( invalidUser ) {
 			return;
 		}
+		
 		addUser_prom = callGql(SERVER_URL, MUTATION_createUser, { name, address, email, role });
-	}
-
-	let disableMsg;
-	function hideMsg() {
-		setTimeout(() => disableMsg = true, 3000);
+		
+		disableMsg = false;
+		setTimeout(() => disableMsg = true, 2000);
 	}
 </script>
 
@@ -61,7 +61,7 @@
 		<p>...</p>
 	{:then res}
 		{#if res && res.data.createUser.success && !disableMsg}
-			<mark transition:fade on:introend="{ hideMsg() }">
+			<mark transition:fade>
 				User has been added
 			</mark>
 		{/if}
