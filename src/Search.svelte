@@ -7,6 +7,12 @@
 	 */
 	export let hint = 'search user';
 
+	/**
+	 * Toggle user delete links
+	 * @type {boolean}
+	 */
+	export let authDelete = false;
+
 	const SERVER_URL = '/api/graphql'
 	const QUERY =
 	`query ($name: String) {
@@ -33,7 +39,6 @@
 		return res;
 	}
 
-	let authDelete = true;
 	const MUTATION =
 	`mutation ($id:ID!) {
 		removeUser(id: $id) {
