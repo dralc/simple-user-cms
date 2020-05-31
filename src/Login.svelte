@@ -3,7 +3,7 @@
 
   export let auth0Client;
   export let isAuth;
-  let profile;
+  export let user = {};
 
   async function login() {
     try {
@@ -23,15 +23,16 @@
 </script>
 
 <style>
+  .ctn { display: flex; justify-content: space-between; width: 180px;}
   button { display:none; }
   .show { display: block; }
+  .pic { border-radius: 50%; width: 50px; }
 </style>
 
-<div>
+<div class="ctn">
+  <div class="profile">
+    <img class="pic" src={user.picture} alt="{user.name}" >
+  </div>
   <button class:show={!isAuth} on:click={login}>Log in</button>
   <button class:show={isAuth} on:click={logout}>Log out</button>
-
-  <div class="profile">
-    <!-- <p>{profile}</p> -->
-  </div>
 </div>

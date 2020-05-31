@@ -45,11 +45,7 @@
 
 <header>
 	<h1>Simple User CMS</h1>
-
-	{#if auth0Client}
-		<Login {isAuth} {auth0Client} />
-	{/if}
-
+	<Login {isAuth} {user} {auth0Client} />
 </header>
 
 <main>
