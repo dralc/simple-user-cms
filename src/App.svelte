@@ -35,6 +35,7 @@
 				catch(er) {
 					console.error(er);
 				}
+				window.history.replaceState({}, document.title, "/");
 			}
 		}
 	}
