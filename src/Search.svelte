@@ -7,10 +7,16 @@
 	 */
 	export let hint = 'search user';
 
+	/**
+	 * Toggle user delete links
+	 * @type {boolean}
+	 */
+	export let authDelete = false;
+
 	const SERVER_URL = '/api/graphql'
 	const QUERY =
-	`query ($name: String) {
-		userList(name: $name) {
+	`query ($name: String, $first: Int) {
+		userList(name: $name, first: $first) {
 			id name address email role
 		}
 	}`;
@@ -23,17 +29,12 @@
 			return;
 		}
 
-		let res = await callGql(SERVER_URL, QUERY, { name });
-
-		if (res && res.data) {
-			// Only show X num of users
-			userList = res.data.userList.slice(0, 10);
-		}
+		let res = await callGql(SERVER_URL, QUERY, { name, first: 10 });
+		userList = res.data.userList;
 
 		return res;
 	}
 
-	let authDelete = true;
 	const MUTATION =
 	`mutation ($id:ID!) {
 		removeUser(id: $id) {

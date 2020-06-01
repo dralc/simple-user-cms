@@ -27,7 +27,7 @@ SIM_REDIS_AUTH  |  -        | somekey
 
 ## Graphql
 * Graphql Playground is available at http://localhost:3000/graphql
-* `npm run dev`
+* `npm run dev:vercel`
 
 ## Redis
 * Monitor commands issued to Redis during dev/debugging `npm run start-rediscli` > `MONITOR`

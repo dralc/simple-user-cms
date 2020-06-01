@@ -85,7 +85,13 @@ exports.get = async ({ id, name }) => {
 	const indexScan = new Promise(res => {
 		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT });
 		let allUsers = [];
-		stream.on('data', users => allUsers = [...allUsers, ...users]);
+		stream.on('data', users => {
+			allUsers = [...allUsers, ...users]
+			if( allUsers.length >= 2 ) {
+				stream.destroy();
+				res(allUsers);
+			}
+		});
 		stream.on('end', () => res(allUsers));
 	});
 
@@ -105,19 +111,25 @@ exports.get = async ({ id, name }) => {
 /**
  * Gets a list of users with the matching `name`
  * 
- * @param { {name: String} } arg
+ * @param { {name: String, first: Number} } arg
  * @returns {Promise<Array<UserResult>}
  */
-exports.getUsers = async ({ name }) => {
+exports.getUsers = async ({ name, first }) => {
 	const indexScan = new Promise((res, rej) => {
 		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT});
 		let allUsers = [];
-		stream.on('data', users => allUsers = [...allUsers, ...users]);
+		stream.on('data', users => {
+			allUsers = [...allUsers, ...users];
+			if( first && allUsers.length >= (first * 2) ) {
+				stream.destroy();
+				res(allUsers);
+			}
+		});
 		stream.on('end', () => res(allUsers));
 	});
 
 	// Format ['John Doe', '11', 'Bob Scott ', '51']
-	const matchedUsers = await indexScan;
+	let matchedUsers = await indexScan;
 
 	if (matchedUsers.length === 0) {
 		throw new DataNotFoundError( { input: name }, 'Data not found' );
@@ -125,6 +137,7 @@ exports.getUsers = async ({ name }) => {
 
 	// Get matched users from index
 	// Format [ { id:'user:11' }, { id:'user:51' } ]
+	matchedUsers = matchedUsers.slice(0, first * 2);
 	const userResults = matchedUsers.reduce((acc, val, i) => {
 		// user num is in the odd indices
 		if (i % 2 !== 0) {
