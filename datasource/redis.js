@@ -8,7 +8,7 @@
 ----------------------------------------------------------------------------*/
 const INDEX_NAME = 'nameIndex';
 const USER_PREFIX = 'user:';
-const SCAN_COUNT = 1000;
+const SCAN_COUNT = 10000;
 require ('../types');
 const Redis = require('ioredis');
 const debug = require('debug');
@@ -129,7 +129,7 @@ exports.getUsers = async ({ name, first }) => {
 	});
 
 	// Format ['John Doe', '11', 'Bob Scott ', '51']
-	const matchedUsers = await indexScan;
+	let matchedUsers = await indexScan;
 
 	if (matchedUsers.length === 0) {
 		throw new DataNotFoundError( { input: name }, 'Data not found' );
@@ -137,6 +137,7 @@ exports.getUsers = async ({ name, first }) => {
 
 	// Get matched users from index
 	// Format [ { id:'user:11' }, { id:'user:51' } ]
+	matchedUsers = matchedUsers.slice(0, first * 2);
 	const userResults = matchedUsers.reduce((acc, val, i) => {
 		// user num is in the odd indices
 		if (i % 2 !== 0) {

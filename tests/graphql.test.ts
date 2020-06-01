@@ -117,7 +117,7 @@ test('Get a list of users', async t => {
 		
 		// Test a valid 'name'
 		const users = await request(ctx.serverUrl, QUERY_userList, { name: ctx.testProps.goodName, first: 15 } );
-		t.truthy(users.data.userList.length >= 15 );
+		t.is(users.data.userList.length, 15);
 		t.true(hasSameProps( users.data.userList[0], { id:'',name:'',email:'',address:'',role:'' } ));
 	}
 	catch (er) {
@@ -165,7 +165,7 @@ test('Create a valid user, then remove it ', async t => {
 
 test('Response time - QUERY_userList', async t => {
 	const pad = 20;
-	const avg_time_max = { local: 30 + pad, ci: 30 + pad };
+	const avg_time_max = { local: 45 + pad, ci: 45 + pad };
 
 	let perf = await getFuncPerf(3, () => request(t.context.serverUrl, QUERY_userList, { name: 'Patrick' }));
 
