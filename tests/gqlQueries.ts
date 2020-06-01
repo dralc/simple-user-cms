@@ -7,8 +7,8 @@ query ($name: String) {
 `;
 
 export const QUERY_userList = `
-query ($name: String) {
-	userList(name: $name) {
+query ($name: String, $first: Int) {
+	userList(name: $name, first: $first) {
 		id
 		name
 		email

@@ -4,7 +4,11 @@ exports.typeDefs = gql`
     type Query {
         user(id: String
              name: String) : User!
-        userList(name: String) : [User!]!
+        userList(name: String,
+            """
+            The number of users to return
+            """
+            first: Int) : [User!]!
 
     }
     type Mutation {

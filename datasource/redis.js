@@ -8,7 +8,7 @@
 ----------------------------------------------------------------------------*/
 const INDEX_NAME = 'nameIndex';
 const USER_PREFIX = 'user:';
-const SCAN_COUNT = 10000;
+const SCAN_COUNT = 1000;
 require ('../types');
 const Redis = require('ioredis');
 const debug = require('debug');
@@ -85,7 +85,13 @@ exports.get = async ({ id, name }) => {
 	const indexScan = new Promise(res => {
 		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT });
 		let allUsers = [];
-		stream.on('data', users => allUsers = [...allUsers, ...users]);
+		stream.on('data', users => {
+			allUsers = [...allUsers, ...users]
+			if( allUsers.length >= 2 ) {
+				stream.destroy();
+				res(allUsers);
+			}
+		});
 		stream.on('end', () => res(allUsers));
 	});
 
@@ -105,14 +111,20 @@ exports.get = async ({ id, name }) => {
 /**
  * Gets a list of users with the matching `name`
  * 
- * @param { {name: String} } arg
+ * @param { {name: String, first: Number} } arg
  * @returns {Promise<Array<UserResult>}
  */
-exports.getUsers = async ({ name }) => {
+exports.getUsers = async ({ name, first }) => {
 	const indexScan = new Promise((res, rej) => {
 		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT});
 		let allUsers = [];
-		stream.on('data', users => allUsers = [...allUsers, ...users]);
+		stream.on('data', users => {
+			allUsers = [...allUsers, ...users];
+			if( first && allUsers.length >= (first * 2) ) {
+				stream.destroy();
+				res(allUsers);
+			}
+		});
 		stream.on('end', () => res(allUsers));
 	});
 

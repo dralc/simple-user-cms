@@ -14,9 +14,9 @@ exports.resolvers = {
 				}
 			}
 		},
-		userList: async (parent, { name }, context, info) => {
+		userList: async (parent, { name, first=10 }, context, info) => {
 			try {
-				const users = await context.datasource.getUsers({ name });
+				const users = await context.datasource.getUsers({ name, first });
 				return users;
 			} catch (er) {
 				if (er instanceof DataNotFoundError) {
