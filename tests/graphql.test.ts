@@ -117,7 +117,7 @@ test('Get a list of users', async t => {
 		
 		// Test a valid 'name'
 		const users = await request(ctx.serverUrl, QUERY_userList, { name: ctx.testProps.goodName, first: 15 } );
-		t.is(users.data.userList.length, 15 );
+		t.truthy(users.data.userList.length >= 15 );
 		t.true(hasSameProps( users.data.userList[0], { id:'',name:'',email:'',address:'',role:'' } ));
 	}
 	catch (er) {
