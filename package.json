@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.8.2",
-    "apollo-server-express": "^2.11.0",
+    "apollo-server-express": "^2.14.2",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
