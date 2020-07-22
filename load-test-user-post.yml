@@ -1,0 +1,27 @@
+config:
+  environments:
+    prod:
+      target: "{{ $processEnvironment.ART_PROD_TARG }}"
+      phases:
+        - duration: 5
+          arrivalRate: 5
+          rampTo: 20
+    dev:
+      target: "https://localhost:3000"
+      phases:
+        - duration: 5
+          arrivalRate: 10
+  processor: "./load-test-helpers.js"
+
+scenarios:
+  # Test without http cache via post
+  - name: 'Request a user via POST'
+    flow:
+    - post:
+        headers:
+          Content-Type: "application/json"
+        url: "{{ $processEnvironment.SIM_GQL_PATH }}"
+        json:
+          query: 'query($name:String){user(name:$name){id name address email role}}'
+          variables: '{"name":"samantha"}'
+        # afterResponse: "logRes"

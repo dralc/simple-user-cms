@@ -19,7 +19,8 @@
     "test:integration": "ava",
     "test:integration:watch": "npm run test:integration -- --watch",
     "test:unit": "SIM_STUB_DATASOURCE=1 ava",
-    "test:unit:watch": "npm run test:unit -- --watch"
+    "test:unit:watch": "npm run test:unit -- --watch",
+    "test:load": "dotenv -- artillery run -o load-report.json -e prod load-test-user-post.yml"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.8.2",
