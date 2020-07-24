@@ -103,7 +103,7 @@ exports.remove = async id => {
  */
 exports.get = async ({ id, name }) => {
 	await getUserReady;
-	let user = await redis.getUser(INDEX_NAME, name.toLowerCase(), 500, 1);
+	let user = await redis.getUser(INDEX_NAME, name.toLowerCase(), 1000, 1);
 
 	if (!user) {
 		throw new DataNotFoundError( { input: id || name }, 'Data not found' );

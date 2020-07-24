@@ -6,11 +6,18 @@ config:
         - duration: 5
           arrivalRate: 5
           rampTo: 20
-    dev:
-      target: "https://localhost:3000"
+    stage:
+      target: "{{ $processEnvironment.ART_STAGE_TARG }}"
       phases:
         - duration: 5
-          arrivalRate: 10
+          arrivalRate: 5
+          rampTo: 20
+    dev:
+      target: "http://localhost:3000"
+      phases:
+        - duration: 5
+          arrivalRate: 5
+          rampTo: 20
   processor: "./load-test-helpers.js"
 
 scenarios:
@@ -23,5 +30,5 @@ scenarios:
         url: "{{ $processEnvironment.SIM_GQL_PATH }}"
         json:
           query: 'query($name:String){user(name:$name){id name address email role}}'
-          variables: '{"name":"samantha"}'
+          variables: '{"name":"Jack Bosco"}'
         # afterResponse: "logRes"
