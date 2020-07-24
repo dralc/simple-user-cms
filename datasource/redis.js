@@ -25,6 +25,26 @@ if ( !process.env.SIM_STUB_DATASOURCE ) {
 	});
 }
 
+const fs = require('fs');
+const path = require('path');
+const { arrayToObject } = require('./utils');
+
+/*
+ Load Lua scripts
+*/
+const getUserReady = new Promise((reso, rej) => {
+	fs.readFile(path.join(__dirname, 'lua/getUser.lua'), { encoding: 'utf8' }, (er, getUser_lua) => {
+		if (er) {
+			rej(er.message);
+		}
+		redis.defineCommand('getUser', {
+			numberOfKeys: 1,
+			lua: getUser_lua
+		});
+		reso(1);
+	});
+});
+
 /**
  * Adds a user and indexes the user's name search
  *
@@ -82,30 +102,17 @@ exports.remove = async id => {
  * @returns {Promise<UserResult>}
  */
 exports.get = async ({ id, name }) => {
-	const indexScan = new Promise(res => {
-		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT });
-		let allUsers = [];
-		stream.on('data', users => {
-			allUsers = [...allUsers, ...users]
-			if( allUsers.length >= 2 ) {
-				stream.destroy();
-				res(allUsers);
-			}
-		});
-		stream.on('end', () => res(allUsers));
-	});
+	await getUserReady;
+	let user = await redis.getUser(INDEX_NAME, name.toLowerCase(), 500, 1);
 
-	const matches = await indexScan;
-
-	if (matches.length === 0) {
+	if (!user) {
 		throw new DataNotFoundError( { input: id || name }, 'Data not found' );
 	}
 
-	const userKey = `${USER_PREFIX}${matches[1]}`;
-	const user = await redis.hgetall(userKey);
+	user = arrayToObject(user);
 	normalizeUser(user);
 
-	return { ...{ id: userKey }, ...user };
+	return user;
 }
 
 /**

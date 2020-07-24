@@ -8,3 +8,14 @@ exports.isValidUser = (user) => {
 		(/^(true|false)$/i.test(user.role))
 	);
 }
+
+exports.arrayToObject = (ar) => {
+	if (Array.isArray(ar)) {
+		const obj = {};
+		for (let i = 0; i < ar.length; i += 2) {
+			obj[ar[i]] = ar[i + 1];
+		}
+		return obj;
+	}
+	return ar;
+}
