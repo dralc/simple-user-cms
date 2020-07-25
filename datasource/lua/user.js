@@ -1,13 +1,11 @@
-local index_name = KEYS[1]
-local name = ARGV[1]
-local count = ARGV[2]
-local retCount = ARGV[3]
+exports.userByName_lua =
+`
+local index_name, name, scan_count, limit = KEYS[1], ARGV[1], ARGV[2], ARGV[3]
 local found = 0
-local cursor = 0
-local userId
+local cursor, userId
 
-while(found < tonumber(retCount)) do
-	local ar = redis.call('HScan', index_name, cursor, 'Match', name..'*', 'Count', count)
+while(found < tonumber(limit) and cursor ~= 0) do
+	local ar = redis.call('HScan', index_name, cursor or 0, 'Match', name..'*', 'Count', scan_count)
 
 	cursor = tonumber(ar[1])
 	local users = ar[2]
@@ -15,13 +13,8 @@ while(found < tonumber(retCount)) do
 
 	if userCount > 0 then
 		userId = users[2]
-		found = 1
+		found = found + 1
 	end
-
-	if cursor == 0 then
-		break;
-	end
-
 end
 
 if userId then
@@ -32,3 +25,4 @@ if userId then
 else
 	return nil
 end
+`;

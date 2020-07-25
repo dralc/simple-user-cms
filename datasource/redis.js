@@ -25,24 +25,15 @@ if ( !process.env.SIM_STUB_DATASOURCE ) {
 	});
 }
 
-const fs = require('fs');
-const path = require('path');
 const { arrayToObject } = require('./utils');
+const { userByName_lua } = require('./lua/user');
 
 /*
  Load Lua scripts
 */
-const getUserReady = new Promise((reso, rej) => {
-	fs.readFile(path.join(__dirname, 'lua/getUser.lua'), { encoding: 'utf8' }, (er, getUser_lua) => {
-		if (er) {
-			rej(er.message);
-		}
-		redis.defineCommand('getUser', {
-			numberOfKeys: 1,
-			lua: getUser_lua
-		});
-		reso(1);
-	});
+redis.defineCommand('getUser', {
+	numberOfKeys: 1,
+	lua: userByName_lua
 });
 
 /**
@@ -102,7 +93,6 @@ exports.remove = async id => {
  * @returns {Promise<UserResult>}
  */
 exports.get = async ({ id, name }) => {
-	await getUserReady;
 	let user = await redis.getUser(INDEX_NAME, name.toLowerCase(), 1000, 1);
 
 	if (!user) {
