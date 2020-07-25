@@ -1,0 +1,22 @@
+config:
+  environments:
+    prod:
+      target: "{{ $processEnvironment.ART_PROD_TARG }}"
+      phases:
+        - duration: 5
+          arrivalRate: 5
+          rampTo: 20
+    dev:
+      target: "https://localhost:3000"
+      phases:
+        - duration: 5
+          arrivalRate: 10
+  processor: "./load-test-helpers.js"
+  
+scenarios:
+  # Test with http cache via get
+  - name: 'Request a user via GET'
+    flow:
+      - get:
+          url: '/api/graphql?query=query(%24name%3AString)%7Buser(name%3A%24name)%7Bid%20name%20address%20email%20role%7D%7D&variables=%7B%22name%22%3A%22samantha%22%7D'
+          # afterResponse: "logRes"
