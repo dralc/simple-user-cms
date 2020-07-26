@@ -10,3 +10,5 @@ todo.md
 /public/build/
 
 .DS_Store
+
+debug.lua

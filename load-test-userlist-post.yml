@@ -1,19 +1,19 @@
 config:
   target: "{{ $processEnvironment.ART_TARG }}"
   phases:
-    - duration: 5
-      arrivalRate: 5
-      rampTo: 20
+  - duration: 5
+    arrivalRate: 5
+    rampTo: 20
   processor: "./load-test-helpers.js"
 
 scenarios:
-  - name: 'Request a user via POST'
+  - name: 'Request userList via POST'
     flow:
     - post:
         headers:
           Content-Type: "application/json"
         url: "{{ $processEnvironment.SIM_GQL_PATH }}"
         json:
-          query: 'query($name:String){user(name:$name){id name address email role}}'
-          variables: '{"name":"Jack Bosco"}'
+          query: 'query($name:String,$first:Int){userList(name:$name,first:$first){id name email address role}}'
+          variables: '{"name":"Jack", "first":5}'
         # afterResponse: "logRes"
