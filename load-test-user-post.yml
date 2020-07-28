@@ -2,6 +2,8 @@ config:
   target: "{{ $processEnvironment.ART_TARG }}"
   phases:
     - duration: 5
+      arrivalRate: 1
+    - duration: 3
       arrivalRate: 5
       rampTo: 20
   processor: "./load-test-helpers.js"
