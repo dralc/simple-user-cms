@@ -103,19 +103,25 @@ test('Get a user', async t => {
 	}
 });
 
-test('Get a list of users', async t => {
+test('Get a list of users | invalid name', async t => {
 	try {
 		const ctx = t.context;
-
-		// Test an invalid 'name'
-		let err = await t.throwsAsync(() => {
+		const err = await t.throwsAsync(() => {
 			return request(ctx.serverUrl, QUERY_userList, { name: ctx.testProps.badName } )
 		}, null, 'should have thrown bad input error');
 
 		let err_o = JSON.parse(err.message);
 		t.is(err_o.errors[0].extensions.code, 'BAD_USER_INPUT');
-		
-		// Test a valid 'name'
+	}
+	catch (er) {
+		t.fail(er.message);
+		t.log(er.stack);
+	}
+});
+
+test('Get a list of users | valid name', async t => {
+	try {
+		const ctx = t.context;
 		const users = await request(ctx.serverUrl, QUERY_userList, { name: ctx.testProps.goodName, first: 15 } );
 		t.is(users.data.userList.length, 15);
 		t.true(hasSameProps( users.data.userList[0], { id:'',name:'',email:'',address:'',role:'' } ));
@@ -124,7 +130,7 @@ test('Get a list of users', async t => {
 		t.fail(er.message);
 		t.log(er.stack);
 	}
-});
+})
 
 test('Create a user: invalid user', async t => {
 	try {

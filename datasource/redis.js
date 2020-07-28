@@ -8,7 +8,7 @@
 ----------------------------------------------------------------------------*/
 const INDEX_NAME = 'nameIndex';
 const USER_PREFIX = 'user:';
-const SCAN_COUNT = 10000;
+const SCAN_COUNT = 1000;
 require ('../types');
 const Redis = require('ioredis');
 const debug = require('debug');
@@ -26,14 +26,14 @@ if ( !process.env.SIM_STUB_DATASOURCE ) {
 }
 
 const { arrayToObject } = require('./utils');
-const { userByName_lua } = require('./lua/user');
+const { getUsersByName_lua } = require('./lua/user');
 
 /*
  Load Lua scripts
 */
-redis.defineCommand('getUser', {
+redis.defineCommand('getUsersByName', {
 	numberOfKeys: 1,
-	lua: userByName_lua
+	lua: getUsersByName_lua,
 });
 
 /**
@@ -93,16 +93,11 @@ exports.remove = async id => {
  * @returns {Promise<UserResult>}
  */
 exports.get = async ({ id, name }) => {
-	let user = await redis.getUser(INDEX_NAME, name.toLowerCase(), 1000, 1);
+	let users;
 
-	if (!user) {
-		throw new DataNotFoundError( { input: id || name }, 'Data not found' );
-	}
+	users = await this.getUsers({ name, first: 1 });
 
-	user = arrayToObject(user);
-	normalizeUser(user);
-
-	return user;
+	return users[0];
 }
 
 /**
@@ -110,54 +105,31 @@ exports.get = async ({ id, name }) => {
  * 
  * @param { {name: String, first: Number} } arg
  * @returns {Promise<Array<UserResult>}
+ * @throws {DataNotFoundError}
  */
 exports.getUsers = async ({ name, first }) => {
-	const indexScan = new Promise((res, rej) => {
-		const stream = redis.hscanStream(INDEX_NAME, { match: `*${name.toLowerCase()}*`, count: SCAN_COUNT});
-		let allUsers = [];
-		stream.on('data', users => {
-			allUsers = [...allUsers, ...users];
-			if( first && allUsers.length >= (first * 2) ) {
-				stream.destroy();
-				res(allUsers);
-			}
-		});
-		stream.on('end', () => res(allUsers));
-	});
+	if (!name || (typeof name !== 'string')) {
+		throw Error("You must specify a valid 'name' param");
+	}
+	if (!first || (typeof first !== 'number')) {
+		throw Error("You must specify a valid 'first' param");
+	}
 
-	// Format ['John Doe', '11', 'Bob Scott ', '51']
-	let matchedUsers = await indexScan;
+	const users = await redis.getUsersByName(INDEX_NAME, name.toLowerCase(), SCAN_COUNT, first, USER_PREFIX);
 
-	if (matchedUsers.length === 0) {
+	if (!users) {
 		throw new DataNotFoundError( { input: name }, 'Data not found' );
 	}
 
-	// Get matched users from index
-	// Format [ { id:'user:11' }, { id:'user:51' } ]
-	matchedUsers = matchedUsers.slice(0, first * 2);
-	const userResults = matchedUsers.reduce((acc, val, i) => {
-		// user num is in the odd indices
-		if (i % 2 !== 0) {
-			acc.push({ id: `${USER_PREFIX}${val}` });
-		}
-		return acc;
-	}, []);
-
-	// Look up each user and fill in user data
-	let pipe = redis.pipeline();
-	for (let user, i=0, len=userResults.length; i < len; i++) {
-		user = userResults[i];
-		pipe.hgetall(`${user.id}`, (er, userGot) => {
-			normalizeUser(userGot);
-			userResults[i] = { ...user, ...userGot };
-		});
+	const ret = [];
+	for (let user of users) {
+		ret.push( normalizeUser(arrayToObject(user)) );
 	}
 
-	await pipe.exec();
-
-	return userResults;
+	return ret;
 }
 
 function normalizeUser(user) {
 	user.role = user.role === 'true' ? true : false;
+	return user;
 }

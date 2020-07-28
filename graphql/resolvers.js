@@ -6,11 +6,14 @@ exports.resolvers = {
 	Query: {
 		user: async (parent, { name }, context, info) => {
 			try {
-				const userResult = await context.datasource.get({ name });
-				return userResult;
+				const user = await context.datasource.get({ name });
+				return user;
 			} catch (er) {
 				if (er instanceof DataNotFoundError) {
 					throw new UserInputError(`User "${er.input}" was not found.`);
+				}
+				else {
+					throw Error(er.message);
 				}
 			}
 		},
@@ -21,6 +24,9 @@ exports.resolvers = {
 			} catch (er) {
 				if (er instanceof DataNotFoundError) {
 					throw new UserInputError(`No users with name "${er.input}" were found`);
+				}
+				else {
+					throw Error(er.message);
 				}
 			}
 		}
