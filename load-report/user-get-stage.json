@@ -1,0 +1,132 @@
+{
+  "aggregate": {
+    "timestamp": "2020-07-28T22:46:05.740Z",
+    "scenariosCreated": 43,
+    "scenariosCompleted": 43,
+    "requestsCompleted": 43,
+    "latency": {
+      "min": 38.6,
+      "max": 2937.5,
+      "median": 42.4,
+      "p95": 1747.4,
+      "p99": 2937.5
+    },
+    "rps": {
+      "count": 43,
+      "mean": 7.58
+    },
+    "scenarioDuration": {
+      "min": 44.4,
+      "max": 2986.3,
+      "median": 51,
+      "p95": 1756.5,
+      "p99": 2986.3
+    },
+    "scenarioCounts": {
+      "Request a user via GET": 43
+    },
+    "errors": {},
+    "codes": {
+      "200": 43
+    },
+    "matches": 0,
+    "customStats": {},
+    "counters": {},
+    "scenariosAvoided": 0,
+    "phases": [
+      {
+        "duration": 3,
+        "arrivalRate": 1
+      },
+      {
+        "duration": 3,
+        "arrivalRate": 5,
+        "rampTo": 20
+      }
+    ]
+  },
+  "intermediate": [
+    {
+      "timestamp": "2020-07-28T22:46:05.738Z",
+      "scenariosCreated": 43,
+      "scenariosCompleted": 43,
+      "requestsCompleted": 43,
+      "latency": {
+        "min": 38.6,
+        "max": 2937.5,
+        "median": 42.4,
+        "p95": 1747.4,
+        "p99": 2937.5
+      },
+      "rps": {
+        "count": 43,
+        "mean": 7.58
+      },
+      "scenarioDuration": {
+        "min": 44.4,
+        "max": 2986.3,
+        "median": 51,
+        "p95": 1756.5,
+        "p99": 2986.3
+      },
+      "scenarioCounts": {
+        "Request a user via GET": 43
+      },
+      "errors": {},
+      "codes": {
+        "200": 43
+      },
+      "matches": 0,
+      "latencies": [
+        2937530688,
+        1987825230,
+        42258347,
+        44298494,
+        47442779,
+        44768394,
+        46194779,
+        42435998,
+        40228709,
+        1561958128,
+        42841102,
+        40792319,
+        1503037102,
+        1617977189,
+        42342828,
+        56811361,
+        39183368,
+        1519657489,
+        41225494,
+        39492794,
+        49209663,
+        39454594,
+        45551927,
+        43353788,
+        40991939,
+        41639569,
+        40334530,
+        41074328,
+        43437551,
+        40492689,
+        42898074,
+        41812585,
+        39259692,
+        39595829,
+        56872616,
+        38604987,
+        40335439,
+        43724242,
+        41569651,
+        65688548,
+        46610832,
+        41392371,
+        41132678
+      ],
+      "customStats": {},
+      "counters": {},
+      "concurrency": 0,
+      "pendingRequests": 0,
+      "scenariosAvoided": 0
+    }
+  ]
+}

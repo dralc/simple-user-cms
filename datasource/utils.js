@@ -9,6 +9,11 @@ exports.isValidUser = (user) => {
 	);
 }
 
+/**
+ * Transforms an array [ a, b, c, d ] into an object { a: b, c: d}
+ * @param {Array} ar
+ * @returns {Object | null}
+ */
 exports.arrayToObject = (ar) => {
 	if (Array.isArray(ar)) {
 		const obj = {};
@@ -17,5 +22,5 @@ exports.arrayToObject = (ar) => {
 		}
 		return obj;
 	}
-	return ar;
+	return null;
 }

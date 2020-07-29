@@ -20,9 +20,8 @@
     "test:integration:watch": "npm run test:integration -- --watch",
     "test:unit": "SIM_STUB_DATASOURCE=1 ava",
     "test:unit:watch": "npm run test:unit -- --watch",
-    "test:load": "dotenv -- artillery run -o load-report/user-post-prod.json -e prod load-test-user-post.yml",
-    "test:load:dev": "dotenv -- artillery run -o load-report/user-post-dev.json -e dev load-test-user-post.yml",
-    "test:load:stage": "dotenv -- artillery run -o load-report/user-post-stage.json -e stage load-test-user-post.yml"
+    "test:load": "dotenv -- npm run test:artillery",
+    "test:artillery": "artillery run -o load-report/$ART_QUERY-$ART_METHOD-$ART_ENV.json load-test-$ART_QUERY-$ART_METHOD.yml"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.8.2",
@@ -41,7 +40,7 @@
     "@rollup/plugin-commonjs": "11.0.2",
     "@rollup/plugin-node-resolve": "^7.0.0",
     "@types/sinon": "^9.0.0",
-    "ava": "^3.5.0",
+    "ava": "^3.11.0",
     "dotenv": "^8.2.0",
     "faker": "^4.1.0",
     "husky": "^4.2.5",
