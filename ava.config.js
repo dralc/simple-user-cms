@@ -11,6 +11,5 @@ export default {
   "require": [
     "dotenv/config",
     "ts-node/register"
-  ],
-  "timeout": "10m"
+  ]
 };
