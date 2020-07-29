@@ -47,16 +47,12 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Debug AVA test - NB. Needs latest nodejs 10, 12 or 13",
+			"name": "Debug AVA test",
 			"program": "${workspaceFolder}/node_modules/.bin/ava",
 			"args": [
-				"debug",
-				"--break",
-				"--verbose",
-				"--fail-fast",
+				"--config", "${workspaceFolder}/ava.config.js",
 				"${file}"
 			],
-			"port": 9229,
 			"outputCapture": "std",
 			"skipFiles": [
 				"<node_internals>/**/*.js"
@@ -64,7 +60,6 @@
 			"env": {
 				"DEBUG": "sim",
 				"SIM_DATASOURCE": "redis",
-				"SIM_STUB_DATASOURCE": "1",
 				"SIM_GQL_PATH": "/api/graphql"
 			}
 		}

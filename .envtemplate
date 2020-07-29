@@ -1,0 +1,12 @@
+DEBUG=sim
+SIM_APP=appGraphql
+SIM_DATASOURCE=redis
+SIM_GQL_PATH=/api/graphql
+SIM_REDIS_HOST=localhost
+SIM_REDIS_PORT=6379
+
+# Artillery tests
+# ART_METHOD=get|post
+# ART_QUERY=user|userlist
+# ART_TARG=http://localhost:3000
+# ART_ENV=dev|stage|prod
