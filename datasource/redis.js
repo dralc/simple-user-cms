@@ -54,7 +54,7 @@ exports.add = async user => {
 
 		await redis.hset(INDEX_NAME, user.name.toLowerCase(), nextUserId);
 
-		return { id: userKey };
+		return { id: nextUserId };
 
 	} catch (er) {
 		debug.log(er);
@@ -63,13 +63,13 @@ exports.add = async user => {
 }
 
 /**
- * @param {String} id - The userKey
+ * @param {String} id - The user id
  * @returns {Promise<String>}
  */
 exports.remove = async id => {
 	try {
 		// Remove user from the name index
-		const name = await redis.hget(id, 'name');
+		const name = await redis.hget(USER_PREFIX + id, 'name');
 		const num1 = await redis.hdel(INDEX_NAME, name.toLowerCase());
 
 		// Remove user
