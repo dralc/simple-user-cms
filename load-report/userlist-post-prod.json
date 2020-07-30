@@ -1,33 +1,33 @@
 {
   "aggregate": {
-    "timestamp": "2020-07-28T22:50:19.340Z",
-    "scenariosCreated": 46,
-    "scenariosCompleted": 46,
-    "requestsCompleted": 46,
+    "timestamp": "2020-07-30T00:59:48.961Z",
+    "scenariosCreated": 42,
+    "scenariosCompleted": 42,
+    "requestsCompleted": 42,
     "latency": {
-      "min": 544.1,
-      "max": 2466.3,
-      "median": 581.4,
-      "p95": 2143.2,
-      "p99": 2466.3
+      "min": 367.3,
+      "max": 1708.5,
+      "median": 378.8,
+      "p95": 1610.3,
+      "p99": 1708.5
     },
     "rps": {
-      "count": 46,
-      "mean": 5.01
+      "count": 42,
+      "mean": 5.48
     },
     "scenarioDuration": {
-      "min": 551.9,
-      "max": 2514.2,
-      "median": 589.2,
-      "p95": 2152.8,
-      "p99": 2514.2
+      "min": 375.7,
+      "max": 1757.1,
+      "median": 389.5,
+      "p95": 1620.3,
+      "p99": 1757.1
     },
     "scenarioCounts": {
-      "Request userList via POST": 46
+      "Request userList via POST": 42
     },
     "errors": {},
     "codes": {
-      "200": 46
+      "200": 42
     },
     "matches": 0,
     "customStats": {},
@@ -47,118 +47,80 @@
   },
   "intermediate": [
     {
-      "timestamp": "2020-07-28T22:50:19.126Z",
-      "scenariosCreated": 46,
-      "scenariosCompleted": 46,
-      "requestsCompleted": 46,
+      "timestamp": "2020-07-30T00:59:48.958Z",
+      "scenariosCreated": 42,
+      "scenariosCompleted": 42,
+      "requestsCompleted": 42,
       "latency": {
-        "min": 544.1,
-        "max": 2466.3,
-        "median": 581.4,
-        "p95": 2143.2,
-        "p99": 2466.3
+        "min": 367.3,
+        "max": 1708.5,
+        "median": 378.8,
+        "p95": 1610.3,
+        "p99": 1708.5
       },
       "rps": {
-        "count": 46,
-        "mean": 5.13
+        "count": 42,
+        "mean": 5.48
       },
       "scenarioDuration": {
-        "min": 551.9,
-        "max": 2514.2,
-        "median": 589.2,
-        "p95": 2152.8,
-        "p99": 2514.2
+        "min": 375.7,
+        "max": 1757.1,
+        "median": 389.5,
+        "p95": 1620.3,
+        "p99": 1757.1
       },
       "scenarioCounts": {
-        "Request userList via POST": 46
+        "Request userList via POST": 42
       },
       "errors": {},
       "codes": {
-        "200": 46
+        "200": 42
       },
       "matches": 0,
       "latencies": [
-        2466280942,
-        1800577124,
-        566841936,
-        1737272343,
-        638406189,
-        598211228,
-        562204398,
-        580731360,
-        566336291,
-        562864698,
-        562802805,
-        553894268,
-        683202332,
-        550823756,
-        1732960729,
-        588108843,
-        653130963,
-        565804490,
-        1614494351,
-        564131924,
-        561184843,
-        1671468707,
-        682335780,
-        558237998,
-        550759741,
-        548772562,
-        555612161,
-        546777996,
-        557798305,
-        582006082,
-        566362917,
-        555025691,
-        973574641,
-        1819495584,
-        1773071175,
-        544091931,
-        560297940,
-        1488469638,
-        557139687,
-        1811433704,
-        562121569,
-        1743608460,
-        1729314453,
-        2136760145,
-        1665472867,
-        2168894507
+        1708464887,
+        378751482,
+        1583339443,
+        384023142,
+        380541775,
+        382483091,
+        381484260,
+        419683246,
+        378765798,
+        377671119,
+        455981331,
+        420693742,
+        394090918,
+        376102344,
+        1534158993,
+        378392870,
+        376876181,
+        433011346,
+        373496861,
+        375035142,
+        378471951,
+        391213707,
+        1650724378,
+        380701765,
+        376033404,
+        367327503,
+        370027931,
+        377092035,
+        374497999,
+        375134014,
+        1572486612,
+        376063130,
+        396347331,
+        381990367,
+        372766480,
+        371727719,
+        1493281048,
+        384686113,
+        375447391,
+        377957391,
+        371114354,
+        373809936
       ],
-      "customStats": {},
-      "counters": {},
-      "concurrency": 0,
-      "pendingRequests": 0,
-      "scenariosAvoided": 0
-    },
-    {
-      "timestamp": "2020-07-28T22:50:19.338Z",
-      "scenariosCreated": 0,
-      "scenariosCompleted": 0,
-      "requestsCompleted": 0,
-      "latency": {
-        "min": null,
-        "max": null,
-        "median": null,
-        "p95": null,
-        "p99": null
-      },
-      "rps": {
-        "count": 0,
-        "mean": null
-      },
-      "scenarioDuration": {
-        "min": null,
-        "max": null,
-        "median": null,
-        "p95": null,
-        "p99": null
-      },
-      "scenarioCounts": {},
-      "errors": {},
-      "codes": {},
-      "matches": 0,
-      "latencies": [],
       "customStats": {},
       "counters": {},
       "concurrency": 0,
