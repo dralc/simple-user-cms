@@ -9,7 +9,9 @@ const faker = require('faker');
 faker.locale = "en_AU";
 const userArg = process.argv[2];
 const fs = require('fs');
-const path = require('path');
+const { resolve } = require('path');
+const { Writable, PassThrough } = require('stream');
+const jsonStream = require('JSONStream');
 
 if (Number.isInteger(parseInt(userArg))) {
 	addUsers(userArg);
@@ -18,22 +20,27 @@ if (Number.isInteger(parseInt(userArg))) {
 }
 
 async function addUsersFromFile(filePath) {
-	fs.readFile(path.join('.', filePath), async (er, dat) => {
-		if (er) {
-			throw er;
-		}
-
-		const ar = JSON.parse(dat.toString());
-		const addedUsers = [];
-		for (let user of ar) {
-			addedUsers.push(datasource.add(user));
-		}
-
+	const addedUsers = [];
+	
+	const log_pstr = new PassThrough({objectMode: true});
+	log_pstr.on('finish', async () => {
 		await Promise.all(addedUsers);
-
-		console.log(`Added ${ar.length} users`);
+		console.log(`Added ${addedUsers.length} users`);
 		process.exit(0);
 	});
+
+	fs.createReadStream( resolve(filePath) )
+		.pipe(jsonStream.parse('*'))
+		.pipe(log_pstr)
+		.pipe(
+			new Writable({
+				objectMode: true,
+				write(user, enc, cb) {
+					addedUsers.push( datasource.add(user) );
+					cb();
+				}
+			})
+		)
 }
 
 async function addUsers(count) {
