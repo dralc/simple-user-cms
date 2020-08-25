@@ -48,9 +48,12 @@ test.beforeEach(async t => {
 	t.context.server = http.createServer(app);
 	t.context.serverUrl = await testListen(t.context.server);
 
-	// Get user from fixture
-	t.context.users = require('../fixtures/users.json');
-	t.context.user = t.context.users[1];
+	t.context.user = {
+		name: 'Alverta Lang',
+		address: '51405 Zemlak Viaduct, Lake Alex 08214',
+		email: 'Tillman.Rice@yahoo.com',
+		role: true,
+	};
 	let user = t.context.user;
 	let id = 'user:1';
 

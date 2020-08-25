@@ -4,7 +4,7 @@
 	---                    | ---      | ---
 	nextUserId             | number   | auto inc
 	user:{nextUserId}      | HashMap  | User -> name, email, address, role
-	nameIndex {User.name}  | HashMap  | {nextUserId}
+	nameIndex              | HashMap  | {User.name}:{User.nextUserId} -> {nextUserId}
 ----------------------------------------------------------------------------*/
 const INDEX_NAME = 'nameIndex';
 const USER_PREFIX = 'user:';
@@ -46,18 +46,15 @@ exports.add = async user => {
 	try {
 		const nextUserId = await redis.incr('nextUserId');
 		const userKey = `${USER_PREFIX}${nextUserId}`;
-		await redis.hset(userKey,
-			'name', user.name,
-			'email', user.email,
-			'address', user.address,
-			'role', user.role);
 
-		await redis.hset(INDEX_NAME, user.name.toLowerCase(), nextUserId);
+		await redis.multi()
+			.hset(userKey, 'name', user.name, 'email', user.email, 'address', user.address, 'role', user.role)
+			.hset(INDEX_NAME, `${user.name.toLowerCase()}:${nextUserId}`, nextUserId)
+			.exec();
 
 		return { id: nextUserId };
 
 	} catch (er) {
-		debug.log(er);
 		throw er;
 	}
 }
@@ -70,10 +67,10 @@ exports.remove = async id => {
 	try {
 		// Remove user from the name index
 		const name = await redis.hget(USER_PREFIX + id, 'name');
-		const num1 = await redis.hdel(INDEX_NAME, name.toLowerCase());
+		const num1 = await redis.hdel(INDEX_NAME, `${name.toLowerCase()}:${id}`);
 
 		// Remove user
-		const numKeysDel = await redis.del(id);
+		const numKeysDel = await redis.del(`${USER_PREFIX}${id}`);
 		if (num1 === 0 && numKeysDel === 0) {
 			throw Error(`User ${id} was not found. Nothing was removed`);
 		}

@@ -171,7 +171,7 @@ test('Create a valid user, then remove it ', async t => {
 
 test('Response time - QUERY_userList', async t => {
 	const pad = 20;
-	const avg_time_max = { local: 45 + pad, ci: 45 + pad };
+	const avg_time_max = { local: 100 + pad, ci: 100 + pad };
 
 	let perf = await getFuncPerf(3, () => request(t.context.serverUrl, QUERY_userList, { name: 'Patrick' }));
 
