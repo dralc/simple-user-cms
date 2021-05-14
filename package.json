@@ -44,7 +44,7 @@
     "ava": "^3.11.0",
     "dotenv": "^8.2.0",
     "faker": "5.5.3",
-    "husky": "^4.2.5",
+    "husky": "6.0.0",
     "node-fetch": "^2.6.0",
     "rollup": "^1.20.0",
     "rollup-plugin-livereload": "^1.0.0",
