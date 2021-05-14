@@ -24,7 +24,7 @@
     "test:artillery": "artillery run -o load-report/$ART_QUERY-$ART_METHOD-$ART_ENV.json load-test-$ART_QUERY-$ART_METHOD.yml"
   },
   "dependencies": {
-    "@auth0/auth0-spa-js": "^1.8.2",
+    "@auth0/auth0-spa-js": "1.15.0",
     "apollo-server-express": "^2.14.2",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
