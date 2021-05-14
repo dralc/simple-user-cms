@@ -33,7 +33,7 @@
     "ioredis": "^4.16.0",
     "morgan": "~1.9.1",
     "nanographql": "^2.0.0",
-    "serverless-http": "^2.3.2",
+    "serverless-http": "2.7.0",
     "sirv-cli": "^0.4.5"
   },
   "devDependencies": {
